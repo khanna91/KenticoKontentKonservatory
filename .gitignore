@@ -1,0 +1,6 @@
+.DS_Store
+Client/node_modules/
+@sapper
+__sapper__
+.vscode
+.vercel
