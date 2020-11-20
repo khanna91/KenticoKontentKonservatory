@@ -115,8 +115,8 @@
           }))} />
     </div>
     <div class="inputs item">
-      <div class="inputGroup">
-        <label class="labelGroup item"><div class="label">{$t('hue')}</div>
+      <div class="group">
+        <label class="group column item"><div class="label">{$t('hue')}</div>
           <input
             class="input"
             type="number"
@@ -130,7 +130,7 @@
                 l: `${lightness}%`,
               }))} />
         </label>
-        <label class="labelGroup item"><div class="label">
+        <label class="group column item"><div class="label">
             {$t('saturation')}
           </div>
           <input
@@ -146,7 +146,7 @@
                 l: `${lightness}%`,
               }))} />
         </label>
-        <label class="labelGroup item">
+        <label class="group column item">
           <div class="label">{$t('lightness')}</div>
           <input
             class="input"
@@ -162,8 +162,8 @@
               }))} />
         </label>
       </div>
-      <div class="inputGroup">
-        <label class="labelGroup item"><div class="label">{$t('red')}</div>
+      <div class="group">
+        <label class="group column item"><div class="label">{$t('red')}</div>
           <input
             class="input"
             type="number"
@@ -177,7 +177,7 @@
                 b: blue,
               }))} />
         </label>
-        <label class="labelGroup item"><div class="label">{$t('green')}</div>
+        <label class="group column item"><div class="label">{$t('green')}</div>
           <input
             class="input"
             type="number"
@@ -191,7 +191,7 @@
                 b: blue,
               }))} />
         </label>
-        <label class="labelGroup item">
+        <label class="group column item">
           <div class="label">{$t('blue')}</div>
           <input
             class="input"
@@ -208,11 +208,11 @@
         </label>
       </div>
       <div class="inputGroup">
-        <label class="labelGroup item"><div class="label">{$t('hex')}</div>
+        <label class="group column item"><div class="label">{$t('hex')}</div>
           <input class="input" disabled bind:value={hexValue} />
         </label>
-        <div class="labelGroup item" />
-        <div class="labelGroup item" />
+        <div class="group item" />
+        <div class="group item" />
       </div>
       <div class="previewGroup">
         <div class="preview" />
@@ -221,7 +221,7 @@
       {#if !disabled && config.presets && config.presets.some((preset) =>
           tinycolor(preset).isValid()
         )}
-        <div class="presetsGroup">
+        <div class="group column">
           <div class="label">{$t('presets')}</div>
           <div class="presets">
             {#each config.presets.filter((preset) =>
@@ -373,44 +373,14 @@
     flex-direction: column;
   }
 
-  .inputGroup {
-    margin-bottom: 0.5em;
-    display: flex;
-  }
-
-  .labelGroup {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .labelGroup + .labelGroup {
+  label.group + label.group {
     margin-left: 1em;
-  }
-
-  .label {
-    font-size: 0.8em;
-    font-weight: 600;
-    color: #919194;
-    margin-bottom: 0.5em;
-  }
-
-  .input {
-    border: none;
-    outline: none;
-    font-size: 1em;
-    font-family: Source Sans Pro, sans-serif;
-    width: 100%;
   }
 
   .presets {
     display: grid;
     grid-gap: 0.5em;
     grid-template-columns: repeat(5, 5em);
-  }
-
-  .presetsGroup {
-    display: flex;
-    flex-direction: column;
   }
 
   .preset {
