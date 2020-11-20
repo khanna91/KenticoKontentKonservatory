@@ -43,8 +43,9 @@
 </script>
 
 <script lang="ts">
-  import { afterUpdate, createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import type { IContext, ICustomElement } from "./customElement";
+  import { toRounded } from "../../../../utilities/numbers";
 
   export let value: any;
   export let config: {};
@@ -53,6 +54,7 @@
   export let disabled: boolean;
 
   let root: HTMLDivElement;
+  let resizeObserver: ResizeObserver;
   let invalid: boolean;
   let customElement: ICustomElement;
 
@@ -64,6 +66,24 @@
     if (invalid) {
       return;
     }
+
+    resizeObserver = new ResizeObserver((entries) => {
+      if (height !== undefined) {
+        return;
+      }
+
+      for (let entry of entries) {
+        if (entry.contentBoxSize && entry.contentBoxSize[0]) {
+          customElement?.setHeight(
+            toRounded(entry.contentBoxSize[0].blockSize)
+          );
+        } else {
+          customElement?.setHeight(toRounded(entry.contentRect.height));
+        }
+      }
+    });
+
+    resizeObserver.observe(root);
 
     customElement = CustomElement;
 
@@ -86,12 +106,8 @@
   }
 
   $: {
-    height !== undefined && customElement?.setHeight(height);
+    height !== undefined && customElement?.setHeight(toRounded(height));
   }
-
-  afterUpdate(
-    () => height === undefined && customElement?.setHeight(root.scrollHeight)
-  );
 </script>
 
 <svelte:head>
@@ -101,7 +117,7 @@
 
 <div bind:this={root}>
   {#if !invalid}
-    {#if value && config}
+    {#if config}
       <slot />
     {:else}
       <slot name="loading" />

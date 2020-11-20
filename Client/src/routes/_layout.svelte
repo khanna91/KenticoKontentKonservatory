@@ -51,6 +51,10 @@
     border-radius: 2px;
   }
 
+  :global(*) {
+    box-sizing: border-box;
+  }
+
   @media (min-width: 400px) {
     :global(body) {
       font-size: 16px;

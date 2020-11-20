@@ -1,12 +1,12 @@
 <script lang="ts">
   import CustomElement, {
     translate,
-  } from "../../shared/customElement/customElement.svelte";
+  } from "./_shared/customElement/customElement.svelte";
   import { toRounded } from "../../utilities/numbers";
   import tinycolor from "tinycolor2";
-  import Loading from "../../shared/customElement/loading.svelte";
+  import Loading from "../../shared/loading.svelte";
   import translations from "./color.resources";
-  import sharedTranslations from "./shared.resources";
+  import sharedTranslations from "./_shared/shared.resources";
 
   interface IColorConfig {
     presets: string[];
