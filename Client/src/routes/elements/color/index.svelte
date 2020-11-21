@@ -1,12 +1,13 @@
 <script lang="ts">
   import CustomElement, {
     translate,
-  } from "./_shared/customElement/customElement.svelte";
-  import { toRounded } from "../../utilities/numbers";
+  } from "../_shared/customElement/customElement.svelte";
+  import { toRounded } from "../../../utilities/numbers";
   import tinycolor from "tinycolor2";
-  import Loading from "../../shared/loading.svelte";
-  import translations from "./color.resources";
-  import sharedTranslations from "./_shared/shared.resources";
+  import Loading from "../../../shared/loading.svelte";
+  import translations from "./_resources";
+  import sharedTranslations from "./../_shared/resources";
+  import { fade } from "svelte/transition";
 
   interface IColorConfig {
     presets: string[];
@@ -86,7 +87,7 @@
       s: `${value.saturation}%`,
       l: `${value.lightness}%`,
     }))}>
-  <div class="container" bind:this={container}>
+  <div class="container" bind:this={container} transition:fade>
     <div class="visuals item">
       <div
         class="box item"
@@ -207,14 +208,14 @@
               }))} />
         </label>
       </div>
-      <div class="inputGroup">
+      <div class="group">
         <label class="group column item"><div class="label">{$t('hex')}</div>
           <input class="input" disabled bind:value={hexValue} />
         </label>
         <div class="group item" />
         <div class="group item" />
       </div>
-      <div class="previewGroup">
+      <div class="group">
         <div class="preview" />
       </div>
       <div class="item" />

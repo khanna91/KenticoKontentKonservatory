@@ -5,11 +5,11 @@
 <script lang="ts">
   import CustomElement, {
     translate,
-  } from "./_shared/customElement/customElement.svelte";
-  import Loading from "../../shared/loading.svelte";
-  import translations from "./bynder.resources";
-  import sharedTranslations from "./_shared/shared.resources";
-  import ObjectTile from "./_shared/objectTile.svelte";
+  } from "./../_shared/customElement/customElement.svelte";
+  import Loading from "../../../shared/loading.svelte";
+  import translations from "./_resources";
+  import sharedTranslations from "./../_shared/resources";
+  import ObjectTile from "./../_shared/objectTile.svelte";
   import type {
     AdditionalInfo,
     IAsset,
@@ -17,6 +17,7 @@
     BynderCompactView as BynderCompactViewType,
   } from "./_bynder";
   import moment from "moment";
+  import { fade } from "svelte/transition";
 
   interface IBynderConfig {
     bynderOptions: Partial<IBynderOptions>;
@@ -41,6 +42,11 @@
     config && (config.bynderOptions.onSuccess = onSuccess);
   }
 
+  const click = () => {
+    BynderCompactView.open(config.bynderOptions);
+    loading = true;
+  };
+
   const removeAsset = (asset: IAsset) => {
     value.assets = value.assets.filter((oldAsset) => oldAsset.id !== asset.id);
   };
@@ -55,17 +61,12 @@
 </svelte:head>
 
 <CustomElement bind:value bind:config bind:disabled>
-  <div class:loading>
-    <div class="group">
-      <button
-        class="button"
-        on:click={() => {
-          loading = true;
-          BynderCompactView.open(config.bynderOptions);
-        }}>
-        {$t('open')}
-      </button>
-    </div>
+  <div class:loading transition:fade>
+    {#if !disabled}
+      <div class="group">
+        <button class="button" on:click={click}> {$t('open')} </button>
+      </div>
+    {/if}
     {#if value.assets}
       <div class="group wrap">
         {#each value.assets as asset (asset.id)}

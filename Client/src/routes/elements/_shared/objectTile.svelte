@@ -1,15 +1,19 @@
 <script lang="ts">
+  import { fade, fly } from "svelte/transition";
+
   export let showActions: boolean;
   export let imageUrl: string;
   export let name: string;
+  export let selected: boolean;
   export let thumbnailUrl: string;
   export let detail: string;
+  export let delay: number = 0;
   export let onRemove: () => void;
   export let onClick: () => void;
 </script>
 
-<div class="wrapper">
-  <div class="content" on:click={onClick}>
+<div class="wrapper" in:fly={{ delay }} out:fade>
+  <div class="content" class:selected on:click={onClick}>
     {#if showActions}
       <div class="actions">
         <a target="_blank" rel="noopener noreferrer" href={imageUrl}>
@@ -56,6 +60,11 @@
     border: 0.15em solid #d0cfce;
     border-radius: 0.1em;
     transition: all 0.15s cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+  }
+
+  .selected {
+    outline: 0.2em solid #0a68f5;
+    box-shadow: 0 0.1em 0.5em 0.15em rgba(0, 0, 0, 0.2);
   }
 
   .actions {

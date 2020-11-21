@@ -1,4 +1,8 @@
-<div class="root">
+<script lang="ts">
+  import { fade } from "svelte/transition";
+</script>
+
+<div class="root" in:fade>
   <div class="loading">
     <div class="bubble" />
   </div>
