@@ -161,7 +161,7 @@
       {/if}
     </div>
     {#if value.product}
-      <div class="group" transition:fly={{ y: 80, duration: 400 }}>
+      <div class="group" transition:fade>
         <div class="group column">
           <div>{$t('previewDescription')}</div>
           <div class="group">
