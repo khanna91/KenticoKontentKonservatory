@@ -1,6 +1,14 @@
 .DS_Store
+
 Client/node_modules/
+
 @sapper
 __sapper__
+
 .vscode
 .vercel
+.vs
+bin
+obj
+*.user
+local.settings.json
