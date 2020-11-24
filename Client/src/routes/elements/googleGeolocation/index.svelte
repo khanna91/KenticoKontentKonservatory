@@ -7,6 +7,7 @@
   import sharedTranslations from "../_shared/resources";
   import { fade } from "svelte/transition";
   import { Loader } from "@googlemaps/js-api-loader";
+  import Invalid from "../_shared/customElement/invalid.svelte";
 
   interface IGoogleGeolocationConfig {
     apiKey: string;
@@ -112,7 +113,7 @@
     <Loading />
   </div>
   <div slot="invalid">
-    <a href={$t('documentationUrl')} target="_blank">{$t('whatToDo')}</a>.
+    <Invalid />
   </div>
 </CustomElement>
 

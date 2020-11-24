@@ -21,7 +21,8 @@
     "polka": "next",
     "sirv": "^1.0.0",
     "tinycolor2": "^1.4.2",
-    "unsplash-js": "^6.3.0"
+    "unsplash-js": "^6.3.0",
+    "wretch": "^1.7.4"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

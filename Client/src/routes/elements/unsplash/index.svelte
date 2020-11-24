@@ -11,6 +11,7 @@
   import type { IPhoto } from "./_unsplash";
   import debounce from "lodash/debounce";
   import { fade, fly } from "svelte/transition";
+  import Invalid from "../_shared/customElement/invalid.svelte";
 
   type SearchPhotosResponse = Response & {
     json(): Promise<{ results: IPhoto[] }>;
@@ -153,7 +154,7 @@
     <Loading />
   </div>
   <div slot="invalid">
-    <a href={$t('documentationUrl')} target="_blank">{$t('whatToDo')}</a>.
+    <Invalid />
   </div>
 </CustomElement>
 

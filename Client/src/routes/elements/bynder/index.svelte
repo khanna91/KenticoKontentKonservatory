@@ -18,6 +18,7 @@
   } from "./_bynder";
   import moment from "moment";
   import { fade } from "svelte/transition";
+  import Invalid from "../_shared/customElement/invalid.svelte";
 
   interface IBynderConfig {
     bynderOptions: Partial<IBynderOptions>;
@@ -85,7 +86,7 @@
     <Loading />
   </div>
   <div slot="invalid">
-    <a href={$t('documentationUrl')} target="_blank">{$t('whatToDo')}</a>.
+    <Invalid />
   </div>
 </CustomElement>
 

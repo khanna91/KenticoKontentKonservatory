@@ -8,6 +8,7 @@
   import translations from "./_resources";
   import sharedTranslations from "./../_shared/resources";
   import { fade } from "svelte/transition";
+  import Invalid from "../_shared/customElement/invalid.svelte";
 
   interface IColorConfig {
     presets: string[];
@@ -242,7 +243,7 @@
     <Loading />
   </div>
   <div slot="invalid">
-    <a href={$t('documentationUrl')} target="_blank">{$t('whatToDo')}</a>.
+    <Invalid />
   </div>
 </CustomElement>
 

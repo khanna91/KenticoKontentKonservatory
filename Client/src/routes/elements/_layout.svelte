@@ -29,6 +29,23 @@
     width: 100%;
   }
 
+  :global(.input:focus) {
+    border-color: #0a68f5 !important;
+    outline: none;
+  }
+
+  :global(.select) {
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    margin: 0.4em 0em;
+  }
+
+  :global(.select:focus) {
+    outline: none;
+  }
+
   :global(.button) {
     font: inherit;
     display: inline-block;
