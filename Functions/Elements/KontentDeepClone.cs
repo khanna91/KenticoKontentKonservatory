@@ -14,13 +14,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Functions.Elements
 {
-    public partial class KontentClone : BaseFunction
+    public partial class KontentDeepClone : BaseFunction
     {
         private readonly IKontentRepository kontentRepository;
         private readonly IKontentApiTracker kontentApiTracker;
 
-        public KontentClone(
-            ILogger<KontentClone> logger,
+        public KontentDeepClone(
+            ILogger<KontentDeepClone> logger,
             IKontentRepository kontentRepository,
             IKontentApiTracker kontentApiTracker
             ) : base(logger)
@@ -29,11 +29,11 @@ namespace Functions.Elements
             this.kontentApiTracker = kontentApiTracker;
         }
 
-        [FunctionName(nameof(KontentClone))]
+        [FunctionName(nameof(KontentDeepClone))]
         public async Task<IActionResult> Run(
             [HttpTrigger(
                 "post",
-                Route = Routes.KontentClone
+                Route = Routes.KontentDeepClone
             )] string body,
             string itemCodename,
             string languageCodename

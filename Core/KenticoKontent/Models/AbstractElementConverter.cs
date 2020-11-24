@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using Core.KenticoKontent.Models.Management.Elements;
 
@@ -7,50 +8,46 @@ using Newtonsoft.Json.Linq;
 
 namespace Core.KenticoKontent.Models
 {
-    internal class AbstractElementConverter : JsonConverter
+    internal class AbstractElementConverter : JsonConverter<AbstractElement>
     {
-        private static readonly JsonSerializerSettings SubclassResolverSettings = new JsonSerializerSettings { ContractResolver = new SubclassResolver<AbstractElement>() };
-
-        public override bool CanConvert(Type objectType) => objectType == typeof(AbstractElement);
-
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override AbstractElement? ReadJson(JsonReader reader, Type objectType, AbstractElement? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType != JsonToken.StartObject)
             {
                 return null;
             }
 
-            static T deserialize<T>(string json) => JsonConvert.DeserializeObject<T>(json, SubclassResolverSettings)!;
+            serializer.ContractResolver = new SubclassResolver<AbstractElement>();
 
-            var rawObject = JObject.Load(reader);
+            var element = JObject.Load(reader);
 
-            if (rawObject.ContainsKey(nameof(RichTextElement.Components).ToLower()))
+            if (element.ContainsKey(nameof(RichTextElement.Components).ToLower()))
             {
-                return deserialize<RichTextElement>(rawObject.ToString());
+                return element.ToObject<RichTextElement>(serializer);
             }
 
-            if (rawObject.ContainsKey(nameof(CustomElement.Searchable_Value).ToLower()))
+            if (element.ContainsKey(nameof(CustomElement.Searchable_Value).ToLower()))
             {
-                return deserialize<CustomElement>(rawObject.ToString());
+                return element.ToObject<CustomElement>(serializer);
             }
 
-            if (rawObject.ContainsKey(nameof(UrlSlugElement.Mode).ToLower()))
+            if (element.ContainsKey(nameof(UrlSlugElement.Mode).ToLower()))
             {
-                return deserialize<UrlSlugElement>(rawObject.ToString());
+                return element.ToObject<UrlSlugElement>(serializer);
             }
 
-            return (rawObject["value"]?.Type) switch
+            return (element["value"]?.Type) switch
             {
-                JTokenType.String => deserialize<TextElement>(rawObject.ToString()),
-                JTokenType.Float => deserialize<NumberElement>(rawObject.ToString()),
-                JTokenType.Date => deserialize<DateTimeElement>(rawObject.ToString()),
-                JTokenType.Array => deserialize<AbstractReferenceListElement>(rawObject.ToString()),
-                _ => deserialize<AbstractElement>(rawObject.ToString()),
+                JTokenType.String => element.ToObject<TextElement>(serializer),
+                JTokenType.Float => element.ToObject<NumberElement>(serializer),
+                JTokenType.Date => element.ToObject<DateTimeElement>(serializer),
+                JTokenType.Array => element.ToObject<AbstractReferenceListElement>(serializer),
+                _ => element.ToObject<AbstractElement>(serializer),
             };
         }
 
         public override bool CanWrite => false;
 
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) => throw new NotImplementedException();
+        public override void WriteJson(JsonWriter writer, AbstractElement? value, JsonSerializer serializer) => throw new NotImplementedException();
     }
 }

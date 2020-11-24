@@ -15,14 +15,12 @@ namespace Core.KenticoKontent.Models.Management
 
         public Exception GetException()
         {
-            var message = Message;
-
             if (ValidationErrors != default && ValidationErrors.Any())
             {
-                message += string.Join(", ", ValidationErrors.Select(error => $"{error.Path}: {error.Message}"));
+                return new ApiException($"{Message} {string.Join(", ", ValidationErrors.Select(error => $"{error.Path}: {error.Message}"))}");
             }
 
-            return new ApiException(message);
+            return new ApiException($"{Message}");
         }
     }
 

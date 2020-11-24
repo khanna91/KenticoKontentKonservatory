@@ -43,6 +43,7 @@ export default {
       }),
       resolve({
         browser: true,
+        preferBuiltins: true,
         dedupe: ["svelte"],
       }),
       commonjs(),

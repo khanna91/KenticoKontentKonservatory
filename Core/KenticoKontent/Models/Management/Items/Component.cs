@@ -12,6 +12,6 @@ namespace Core.KenticoKontent.Models.Management.Items
 
         public Reference? Type { get; set; }
 
-        public IList<AbstractElement> Elements { get; set; } = new List<AbstractElement>();
+        public IList<dynamic>? Elements { get; set; }
     }
 }

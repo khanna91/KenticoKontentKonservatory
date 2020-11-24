@@ -7,36 +7,32 @@ using Newtonsoft.Json.Linq;
 
 namespace Core.KenticoKontent.Models
 {
-    internal class ReferenceConverter : JsonConverter
+    internal class ReferenceConverter : JsonConverter<Reference>
     {
-        private static readonly JsonSerializerSettings SubclassResolverSettings = new JsonSerializerSettings { ContractResolver = new SubclassResolver<Reference>() };
-
-        public override bool CanConvert(Type objectType) => objectType == typeof(Reference);
-
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override Reference? ReadJson(JsonReader reader, Type objectType, Reference? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType != JsonToken.StartObject)
             {
                 return null;
             }
 
-            static T deserialize<T>(string json) => JsonConvert.DeserializeObject<T>(json, SubclassResolverSettings)!;
+            serializer.ContractResolver = new SubclassResolver<Reference>();
 
             var rawObject = JObject.Load(reader);
 
             if (rawObject.ContainsKey("id"))
             {
-                return deserialize<IdReference>(rawObject.ToString());
+                return rawObject.ToObject<IdReference>(serializer);
             }
 
             if (rawObject.ContainsKey("codename"))
             {
-                return deserialize<CodenameReference>(rawObject.ToString());
+                return rawObject.ToObject<CodenameReference>(serializer);
             }
 
             if (rawObject.ContainsKey("external_id"))
             {
-                return deserialize<ExternalIdReference>(rawObject.ToString());
+                return rawObject.ToObject<ExternalIdReference>(serializer);
             }
 
             throw new NotImplementedException("Reference format not supported.");
@@ -44,9 +40,9 @@ namespace Core.KenticoKontent.Models
 
         public override bool CanWrite => true;
 
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, Reference? value, JsonSerializer serializer)
         {
-            switch (value)
+            switch (value as object)
             {
                 case IdReference idReference:
                     JToken.FromObject(new { id = idReference.Value }).WriteTo(writer);

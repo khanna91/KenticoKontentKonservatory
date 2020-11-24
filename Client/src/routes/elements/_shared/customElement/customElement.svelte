@@ -46,7 +46,6 @@
   import { createEventDispatcher, onMount } from "svelte";
   import type { IContext, ICustomElement } from "./customElement";
   import { toRounded } from "../../../../utilities/numbers";
-  import { fly } from "svelte/transition";
 
   export let value: any;
   export let config: {};

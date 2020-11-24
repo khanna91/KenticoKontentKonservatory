@@ -37,11 +37,12 @@
 
   let loading: boolean = true;
   let redirectUri: string;
-  let forms: IHubSpotForm[];
+  let responseError: any;
+  let response: IHubSpotFormsResponse;
   let showForm: boolean = true;
 
-  const codeStore = localStore<string>(LocalStorageKeys.Code);
-  const refreshTokenStore = localStore<string>(LocalStorageKeys.RefreshToken);
+  const code = localStore<string>(LocalStorageKeys.Code);
+  const refreshToken = localStore<string>(LocalStorageKeys.RefreshToken);
 
   onMount(() => {
     redirectUri = window.location.href;
@@ -51,12 +52,12 @@
     );
 
     if (codeParameter) {
-      codeStore.set(codeParameter);
+      code.set(codeParameter);
       window.close();
     }
   });
 
-  $: if (!$codeStore && config) {
+  $: if (!$code && config) {
     window.open(
       `https://app.hubspot.com/oauth/authorize?scope=contacts%20forms&client_id=${config.clientId}&redirect_uri=${redirectUri}`,
       undefined,
@@ -64,7 +65,7 @@
     );
   }
 
-  $: $codeStore && config && loadForms();
+  $: $code && config && loadForms();
 
   const loadForms = async () => {
     let continueRequest = true;
@@ -73,25 +74,30 @@
       .post({
         clientId: config.clientId,
         redirectUri: redirectUri,
-        code: $codeStore,
-        refreshToken: $refreshTokenStore,
+        code: $code,
+        refreshToken: $refreshToken,
       })
       .unauthorized(() => {
         continueRequest = false;
-        codeStore.set(undefined);
+        code.set(undefined);
       })
       .json<IHubSpotFormsResponse>();
 
-    const response = await request;
+    try {
+      responseError = undefined;
+      response = await request;
+    } catch (error) {
+      responseError = error;
+    }
 
     if (!continueRequest) {
       return;
     }
 
-    forms = response.forms;
-    refreshTokenStore.set(response.refreshToken);
     loading = false;
   };
+
+  $: response && refreshToken.set(response.refreshToken);
 
   const t = translate(translations, [sharedTranslations]);
 </script>
@@ -101,19 +107,22 @@
     <Loading />
   {:else}
     <div transition:fade>
-      {#if !disabled}
+      {#if !disabled && !responseError}
         <div class="group">
           <!-- svelte-ignore a11y-no-onchange -->
           <select
             class="select"
             value={value.form && value.form.guid}
-            on:change={(event) => event.currentTarget.value !== '' && (value.form = forms.find((form) => form.guid === event.currentTarget.value))}>
+            on:change={(event) => event.currentTarget.value !== '' && (value.form = response.forms.find((form) => form.guid === event.currentTarget.value))}>
             <option value="">{$t('chooseForm')}</option>
-            {#each forms as form (form.guid)}
+            {#each response.forms as form (form.guid)}
               <option value={form.guid}>{form.name}</option>
             {/each}
           </select>
         </div>
+      {/if}
+      {#if responseError}
+        <div class="group">{responseError}</div>
       {/if}
       {#if value.form}
         <div class="group" transition:fade>
