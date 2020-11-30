@@ -1,7 +1,3 @@
-export interface IShopifyGraphql {
-  data: IQueryRoot;
-}
-
 export interface IQueryRoot {
   products: IProductConnection;
 }

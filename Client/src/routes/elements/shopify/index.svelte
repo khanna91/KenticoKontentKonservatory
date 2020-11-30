@@ -9,7 +9,7 @@
   import type { IPriceV2, IProduct, IQueryRoot } from "./_shopify";
   import { GraphQLClient, gql } from "graphql-request";
   import DOMPurify from "dompurify";
-  import { fade, fly } from "svelte/transition";
+  import { fade } from "svelte/transition";
   import Invalid from "../_shared/customElement/invalid.svelte";
 
   interface IShopifyConfig {
@@ -94,8 +94,9 @@
           <button
             class="button"
             on:click={() => {
+              filter = '';
+              data = undefined;
               listOpen = false;
-              filter = undefined;
             }}>
             {$t('close')}
           </button>
@@ -149,12 +150,14 @@
                 }) as product, index (product.id)}
                 <ObjectTile
                   name={product.title}
-                  detail={product.variants.edges[0].node.priceV2.amount}
+                  detail={formatProductPrice(product.variants.edges[0].node.priceV2)}
                   imageUrl={product.images.edges[0].node.originalSrc}
                   thumbnailUrl={product.images.edges[0].node.originalSrc}
                   delay={index * 50}
                   onClick={() => {
                     value.product = product;
+                    filter = '';
+                    data = undefined;
                     listOpen = false;
                   }} />
               {/each}
@@ -170,6 +173,7 @@
           <div class="group">
             <div>
               <img
+                class="image"
                 src={value.product.images.edges[0].node.originalSrc}
                 alt={value.product.title} />
             </div>
@@ -197,6 +201,10 @@
 </CustomElement>
 
 <style>
+  .image {
+    max-width: 100%;
+  }
+
   .description {
     flex: 2;
     margin: 0 1em;

@@ -14,6 +14,10 @@
     flex-direction: column;
   }
 
+  :global(.item) {
+    flex: 1;
+  }
+
   :global(.label) {
     font-size: 0.8em;
     font-weight: 600;

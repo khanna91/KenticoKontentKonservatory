@@ -253,10 +253,6 @@
     height: 20em;
   }
 
-  .item {
-    flex: 1;
-  }
-
   .visuals {
     display: flex;
     flex-direction: column;

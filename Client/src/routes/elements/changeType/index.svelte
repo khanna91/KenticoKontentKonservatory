@@ -255,9 +255,3 @@
     <Invalid />
   </div>
 </CustomElement>
-
-<style>
-  .item {
-    flex: 1;
-  }
-</style>
