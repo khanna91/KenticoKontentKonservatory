@@ -11,21 +11,12 @@
   import type { IContext } from "../_shared/customElement/customElement";
   import moment from "moment";
   import { toRounded } from "../../../utilities/numbers";
+  import type { IContentItem } from "../_shared/management";
 
   interface IDeepCloneResponse {
     totalApiCalls: number;
     totalMilliseconds: number;
     newItems: IContentItem[];
-  }
-
-  interface IContentItem {
-    id: string;
-    name: string;
-    codename: string;
-    type: {
-      id: string;
-    };
-    external_id: string;
   }
 
   interface IDeepCloneConfig {
@@ -104,7 +95,7 @@
         <div class="group">{responseError}</div>
       {/if}
       {#if response && !responseError}
-        <div class="group">
+        <div class="group" transition:fade>
           <div class="group column item">
             <div class="label">{$t('totalTime')}</div>
             <span>{totalTime}</span>

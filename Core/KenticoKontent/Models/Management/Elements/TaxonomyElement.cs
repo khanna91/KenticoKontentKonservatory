@@ -2,15 +2,12 @@
 {
     public class TaxonomyElement : AbstractReferenceListElement
     {
-        public TaxonomyElement(AbstractReferenceListElement element)
+        public const string Type = "taxonomy";
+
+        internal TaxonomyElement(AbstractReferenceListElement element)
         {
             Element = element.Element;
             Value = element.Value;
-        }
-
-        public override AbstractElement Clone()
-        {
-            return new TaxonomyElement(this);
         }
     }
 }

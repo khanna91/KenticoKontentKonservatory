@@ -1,11 +1,12 @@
 ﻿using Core.KenticoKontent.Models.Management.References;
 
+using Newtonsoft.Json;
+
 namespace Core.KenticoKontent.Models.Management.Elements
 {
-    public abstract class AbstractElement<T> : IElement
+    [JsonConverter(typeof(ElementTypeResolver))]
+    public interface IElement
     {
-        public T Value { get; set; }
-
         public Reference? Element { get; set; }
     }
 }

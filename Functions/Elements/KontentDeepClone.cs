@@ -45,8 +45,10 @@ namespace Functions.Elements
 
                 stopwatch.Start();
 
+                kontentApiTracker.ApiCalls = 0;
+
                 var oldItemReference = new CodenameReference(itemCodename);
-                var newItemReference = new ExternalIdReference(kontentRepository.GetExternalId());
+                var newItemReference = kontentRepository.NewExternalIdReference();
                 var languageReference = new CodenameReference(languageCodename);
                 var newItemVariants = new Dictionary<Reference, ItemVariant>();
 

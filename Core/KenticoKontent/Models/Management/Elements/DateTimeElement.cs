@@ -2,17 +2,8 @@
 
 namespace Core.KenticoKontent.Models.Management.Elements
 {
-    public class DateTimeElement : AbstractElement
+    public class DateTimeElement : AbstractElement<DateTime>
     {
-        public DateTime? Value { get; set; }
-
-        public override AbstractElement Clone()
-        {
-            return new DateTimeElement
-            {
-                Element = Element,
-                Value = Value
-            };
-        }
+        public const string Type = "date_time";
     }
 }

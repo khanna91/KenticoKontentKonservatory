@@ -13,11 +13,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Functions.Elements
 {
-    public partial class KontentGetTypes : BaseFunction
+    public partial class KontentChangeTypeGetTypes : BaseFunction
     {
         private readonly IKontentRepository kontentRepository;
 
-        public KontentGetTypes(
+        public KontentChangeTypeGetTypes(
             ILogger<KontentChangeType> logger,
             IKontentRepository kontentRepository
             ) : base(logger)
@@ -25,11 +25,11 @@ namespace Functions.Elements
             this.kontentRepository = kontentRepository;
         }
 
-        [FunctionName(nameof(KontentGetTypes))]
+        [FunctionName(nameof(KontentChangeTypeGetTypes))]
         public async Task<IActionResult> Run(
             [HttpTrigger(
                 "get",
-                Route = Routes.KontentGetTypes
+                Route = Routes.KontentChangeTypeGetTypes
             )] string body,
             string itemCodename
             )

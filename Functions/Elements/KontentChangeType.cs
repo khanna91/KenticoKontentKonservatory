@@ -4,9 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Core.KenticoKontent.Models.Management.Elements;
 using Core.KenticoKontent.Models.Management.Items;
 using Core.KenticoKontent.Models.Management.References;
 using Core.KenticoKontent.Services;
+
+using Functions.Models;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -34,10 +37,9 @@ namespace Functions.Elements
             [HttpTrigger(
                 "post",
                 Route = Routes.KontentChangeType
-            )] Dictionary<string,string> elementMappings,
+            )] ChangeTypeRequest changeTypeRequest,
             string itemCodename,
-            string? languageCodename,
-            string? typeId
+            string languageCodename
             )
         {
             try
@@ -48,11 +50,13 @@ namespace Functions.Elements
 
                 kontentApiTracker.ApiCalls = 0;
 
-                var oldItemReference = new CodenameReference(itemCodename);
-                var languageReference = new CodenameReference(languageCodename ?? "");
-                var newTypeReference = new IdReference(typeId ?? "");
+                var (elementMappings, selectedType) = changeTypeRequest;
 
-                var newItemReference = new ExternalIdReference(kontentRepository.GetExternalId());
+                var oldItemReference = new CodenameReference(itemCodename);
+                var languageReference = new CodenameReference(languageCodename);
+                var newTypeReference = new IdReference(selectedType.Id!);
+
+                var newItemReference = kontentRepository.NewExternalIdReference();
 
                 var oldItemVariant = await kontentRepository.GetItemVariant(new GetItemVariantParameters
                 {
@@ -62,16 +66,38 @@ namespace Functions.Elements
 
                 var (oldItem, oldVariant) = oldItemVariant;
 
-                oldVariant.Elements = elementMappings.Select(pair =>
+                var newElements = new List<IElement>();
+
+                foreach (var pair in elementMappings)
                 {
-                    var oldElement = oldVariant.Elements
-                        .First(element => element.Element?.Value == pair.Value)
-                        .Clone();
+                    var newTypeElementReferenceId = pair.Key;
+                    var newElement = selectedType.Elements.First(element => element.Id == newTypeElementReferenceId);
 
-                    oldElement.Element = new IdReference(pair.Key);
+                    var oldElementReference = pair.Value;
+                    var oldElement = oldVariant.Elements.First(element => element.Element?.Value == oldElementReference);
+                    var oldElementValue = (oldElement as dynamic).Value;
 
-                    return oldElement;
-                }).ToList();
+                    var newTypeElementReference = new IdReference(newTypeElementReferenceId);
+
+                    switch (newElement.Type)
+                    {
+                        case UrlSlugElement.Type:
+                            newElements.Add(new UrlSlugElement { Element = newTypeElementReference, Value = oldElementValue?.ToString(), Mode = "custom" });
+                            break;
+
+                        case "guidelines":
+                        case TextElement.Type:
+                            newElements.Add(new TextElement { Element = newTypeElementReference, Value = oldElementValue?.ToString() });
+                            break;
+
+                        default:
+                            oldElement.Element = newTypeElementReference;
+                            newElements.Add(oldElement);
+                            break;
+                    }
+                }
+
+                oldVariant.Elements = newElements;
 
                 var newVariants = new Dictionary<Reference, LanguageVariant>();
 

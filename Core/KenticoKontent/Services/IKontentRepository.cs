@@ -26,7 +26,7 @@ namespace Core.KenticoKontent.Services
 
         Task<LanguageVariant?> RetrieveLanguageVariant(RetrieveLanguageVariantParameters retrieveLanguageVariantParameters);
 
-        string GetExternalId();
+        ExternalIdReference NewExternalIdReference();
 
         Task<ContentItem> UpsertContentItem(ContentItem contentItem);
 

@@ -169,7 +169,7 @@ namespace KenticoKontent.Services
                                     }
                                     else
                                     {
-                                        var newReference = new ExternalIdReference(GetExternalId());
+                                        var newReference = NewExternalIdReference();
 
                                         descendantReferences!.Add(GetNewItemVariant(new GetNewItemVariantParameters
                                         {
@@ -225,7 +225,7 @@ namespace KenticoKontent.Services
                                 return itemVariant.Variant.ItemReference;
                             }
 
-                            var newReference = new ExternalIdReference(GetExternalId());
+                            var newReference = NewExternalIdReference();
 
                             descendantReferences.Add(GetNewItemVariant(new GetNewItemVariantParameters
                             {
@@ -430,31 +430,15 @@ namespace KenticoKontent.Services
 
             variant.Elements = variant.Elements.Select(element =>
             {
-                if (element is AbstractReferenceListElement listElement)
+                return element switch
                 {
-                    var elementType = itemTypeElements.First(typeElement => typeElement.Id == element.Element?.Value);
-
-                    switch (elementType.Type)
-                    {
-                        case "asset":
-                            return new AssetElement(listElement);
-
-                        case "multiple_choice":
-                            return new MultipleChoiceElement(listElement);
-
-                        case "taxonomy":
-                            return new TaxonomyElement(listElement);
-
-                        case "modular_content":
-                            return new LinkedItemsElement(listElement);
-                    }
-                }
-
-                return element;
+                    AbstractReferenceListElement listElement => ElementTypeResolver.ResolveAbstractReferenceListElement(listElement, itemTypeElements),
+                    _ => element,
+                };
             }).ToList();
         }
 
-        public string GetExternalId() => Guid.NewGuid().ToString();
+        public ExternalIdReference NewExternalIdReference() => new ExternalIdReference(Guid.NewGuid().ToString());
 
         public async Task<ContentItem> UpsertContentItem(ContentItem contentItem)
         {
@@ -574,10 +558,7 @@ namespace KenticoKontent.Services
 
                 getItems(responseObject);
 
-                if (!string.IsNullOrWhiteSpace(responseObject.Pagination?.ContinuationToken))
-                {
-                    continuationToken = responseObject.Pagination?.ContinuationToken;
-                }
+                continuationToken = responseObject.Pagination?.ContinuationToken;
 
                 httpClient.DefaultRequestHeaders.Remove("x-continuation");
             } while (!string.IsNullOrWhiteSpace(continuationToken));

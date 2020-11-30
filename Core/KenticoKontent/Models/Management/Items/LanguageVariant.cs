@@ -15,6 +15,6 @@ namespace Core.KenticoKontent.Models.Management.Items
         [JsonProperty("workflow_step")]
         public Reference? WorkflowStep { get; set; }
 
-        public IList<AbstractElement>? Elements { get; set; }
+        public IList<IElement>? Elements { get; set; }
     }
 }

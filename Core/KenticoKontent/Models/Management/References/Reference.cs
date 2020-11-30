@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Core.KenticoKontent.Models.Management.References
 {
-    [JsonConverter(typeof(ReferenceConverter))]
+    [JsonConverter(typeof(ReferenceResolver))]
     public abstract class Reference
     {
         public string Value { get; }

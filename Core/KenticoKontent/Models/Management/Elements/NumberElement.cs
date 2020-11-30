@@ -1,16 +1,7 @@
 ﻿namespace Core.KenticoKontent.Models.Management.Elements
 {
-    public class NumberElement : AbstractElement
+    public class NumberElement : AbstractElement<float>
     {
-        public float? Value { get; set; }
-
-        public override AbstractElement Clone()
-        {
-            return new NumberElement
-            {
-                Element = Element,
-                Value = Value
-            };
-        }
+        public const string Type = "number";
     }
 }

@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Core.KenticoKontent.Models
 {
-    internal class ReferenceConverter : JsonConverter<Reference>
+    internal class ReferenceResolver : JsonConverter<Reference>
     {
         public override Reference? ReadJson(JsonReader reader, Type objectType, Reference? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {

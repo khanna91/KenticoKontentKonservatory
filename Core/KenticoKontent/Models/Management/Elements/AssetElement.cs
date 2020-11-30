@@ -2,15 +2,12 @@
 {
     public class AssetElement : AbstractReferenceListElement
     {
-        public AssetElement(AbstractReferenceListElement element)
+        public const string Type = "asset";
+
+        internal AssetElement(AbstractReferenceListElement element)
         {
             Element = element.Element;
             Value = element.Value;
-        }
-
-        public override AbstractElement Clone()
-        {
-            return new AssetElement(this);
         }
     }
 }

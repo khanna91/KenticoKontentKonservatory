@@ -122,56 +122,62 @@ namespace Functions.Webhooks
                 switch (element)
                 {
                     case RichTextElement richTextElement:
-                        var value = richTextElement.Value;
-
-                        if (value?.Length >= 5000)
                         {
-                            var parts = textAnalyzer.SplitHtml(value);
-                            var result = "";
+                            var value = richTextElement.Value;
 
-                            foreach (var part in parts)
+                            if (value?.Length >= 5000)
                             {
-                                var (partTranslated, partTranslation) = await Translate(part, translationLanguage);
+                                var parts = textAnalyzer.SplitHtml(value);
+                                var longResult = "";
 
-                                if (partTranslated)
+                                foreach (var part in parts)
                                 {
-                                    result += partTranslation;
-                                };
+                                    var (translated, translation) = await Translate(part, translationLanguage);
+
+                                    if (translated)
+                                    {
+                                        longResult += translation;
+                                    };
+                                }
+
+                                if (!string.IsNullOrWhiteSpace(longResult))
+                                {
+                                    richTextElement.Value = longResult;
+                                }
+
+                                break;
                             }
 
-                            if (!string.IsNullOrWhiteSpace(result))
+                            var result = await Translate(richTextElement.Value, translationLanguage);
+
+                            if (result.translated)
                             {
-                                richTextElement.Value = result;
-                            }
-
+                                richTextElement.Value = result.translation;
+                            };
                             break;
                         }
 
-                        var (translated, translation) = await Translate(richTextElement.Value, translationLanguage);
-
-                        if (translated)
-                        {
-                            richTextElement.Value = translation;
-                        };
-                        break;
-
                     case UrlSlugElement urlSlugElement:
-                        (translated, translation) = await Translate(urlSlugElement.Value, translationLanguage);
-
-                        if (translated)
                         {
-                            urlSlugElement.Value = translation.Replace(" ", "-");
-                        };
-                        break;
+                            var (translated, translation) = await Translate(urlSlugElement.Value, translationLanguage);
+
+                            if (translated)
+                            {
+                                urlSlugElement.Value = translation.Replace(" ", "-");
+                            };
+                            break;
+                        }
 
                     case TextElement textElement:
-                        (translated, translation) = await Translate(textElement.Value, translationLanguage);
-
-                        if (translated)
                         {
-                            textElement.Value = translation;
-                        };
-                        break;
+                            var (translated, translation) = await Translate(textElement.Value, translationLanguage);
+
+                            if (translated)
+                            {
+                                textElement.Value = translation;
+                            };
+                            break;
+                        }
                 }
             }
 
@@ -182,7 +188,7 @@ namespace Functions.Webhooks
             });
         }
 
-        private async Task<(bool, string)> Translate(string? original, string translationLanguage)
+        private async Task<(bool translated, string translation)> Translate(string? original, string translationLanguage)
         {
             if (string.IsNullOrWhiteSpace(original))
             {

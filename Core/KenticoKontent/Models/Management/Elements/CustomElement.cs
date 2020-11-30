@@ -2,21 +2,11 @@
 
 namespace Core.KenticoKontent.Models.Management.Elements
 {
-    public class CustomElement : AbstractElement
+    public class CustomElement : AbstractElement<string>
     {
-        public string? Value { get; set; }
+        public const string Type = "custom";
 
         [JsonProperty("searchable_value")]
         public string? Searchable_Value { get; set; }
-
-        public override AbstractElement Clone()
-        {
-            return new CustomElement
-            {
-                Element = Element,
-                Value = Value,
-                Searchable_Value = Searchable_Value
-            };
-        }
     }
 }

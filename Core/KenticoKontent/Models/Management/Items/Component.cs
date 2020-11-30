@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Core.KenticoKontent.Models.Management.Elements;
 using Core.KenticoKontent.Models.Management.References;
 
 namespace Core.KenticoKontent.Models.Management.Items
