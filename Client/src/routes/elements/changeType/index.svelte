@@ -10,12 +10,12 @@
   import wretch from "wretch";
   import type { IContext } from "../_shared/customElement/customElement";
   import moment from "moment";
-  import { toRounded } from "../../../utilities/numbers";
   import type {
     ElementType,
     IContentItem,
     IContentType,
   } from "../_shared/management";
+import { round } from "lodash";
 
   interface IGetTypesResponse {
     currentType: IContentType;
@@ -66,9 +66,10 @@
   const loadTypes = async () => {
     loading = true;
 
-    const request = wretch(
-      `${config.getTypesEndpoint}/${context.item.codename}`
-    )
+    const getTypesEndpoint = new URL(config.getTypesEndpoint);
+    getTypesEndpoint.pathname += `/${context.item.codename}`;
+
+    const request = wretch(getTypesEndpoint.toString())
       .get()
       .json<IGetTypesResponse>();
 
@@ -89,9 +90,10 @@
   const changeType = async () => {
     loading = true;
 
-    const request = wretch(
-      `${config.changeTypeEndpoint}/${context.item.codename}/${context.variant.codename}`
-    )
+    const changeTypeEndpoint = new URL(config.changeTypeEndpoint);
+    changeTypeEndpoint.pathname += `/${context.item.codename}/${context.variant.codename}`;
+
+    const request = wretch(changeTypeEndpoint.toString())
       .post({ elementMappings, selectedType })
       .json<IChangeTypeResponse>();
 
@@ -122,7 +124,7 @@
     if (totalTime.seconds() > 0) {
       result.push(
         `${
-          totalTime.seconds() + toRounded(totalTime.milliseconds() / 1000, 3)
+          totalTime.seconds() + round(totalTime.milliseconds() / 1000, 3)
         } ${$t("seconds")}`
       );
     }

@@ -1,10 +1,10 @@
 <script lang="ts">
   import CustomElement, {
     translate,
-  } from "./../_shared/customElement/customElement.svelte";
+  } from "../_shared/customElement/customElement.svelte";
   import Loading from "../../../shared/loading.svelte";
   import translations from "./_resources";
-  import sharedTranslations from "./../_shared/resources";
+  import sharedTranslations from "../_shared/resources";
   import { fade } from "svelte/transition";
   import Invalid from "../_shared/customElement/invalid.svelte";
   import type { IHubSpotForm } from "./_hubSpot";
@@ -17,28 +17,28 @@
     RefreshToken = "HubSpotForms:refreshToken",
   }
 
-  interface IHubSpotFormsResponse {
+  interface IHubSpotFormResponse {
     forms: IHubSpotForm[];
     refreshToken: string;
   }
 
-  interface IHubSpotFormsConfig {
+  interface IHubSpotFormConfig {
     formsEndpoint: string;
     clientId: string;
   }
 
-  interface IHubSpotFormsValue {
+  interface IHubSpotFormValue {
     form?: IHubSpotForm;
   }
 
-  let value: IHubSpotFormsValue = {};
-  let config: IHubSpotFormsConfig;
+  let value: IHubSpotFormValue = {};
+  let config: IHubSpotFormConfig;
   let disabled: boolean;
 
   let loading: boolean = true;
   let redirectUri: string;
   let responseError: any;
-  let response: IHubSpotFormsResponse;
+  let response: IHubSpotFormResponse;
   let showForm: boolean = true;
 
   const code = localStore<string>(LocalStorageKeys.Code);
@@ -81,7 +81,7 @@
         continueRequest = false;
         code.set(undefined);
       })
-      .json<IHubSpotFormsResponse>();
+      .json<IHubSpotFormResponse>();
 
     try {
       responseError = undefined;

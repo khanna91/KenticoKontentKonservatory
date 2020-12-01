@@ -10,8 +10,8 @@
   import wretch from "wretch";
   import type { IContext } from "../_shared/customElement/customElement";
   import moment from "moment";
-  import { toRounded } from "../../../utilities/numbers";
   import type { IContentItem } from "../_shared/management";
+import { round } from "lodash";
 
   interface IDeepCloneResponse {
     totalApiCalls: number;
@@ -35,9 +35,10 @@
   const clone = async () => {
     loading = true;
 
-    const request = wretch(
-      `${config.deepCloneEndpoint}/${context.item.codename}/${context.variant.codename}`
-    )
+    const deepCloneEndpoint = new URL(config.deepCloneEndpoint);
+    deepCloneEndpoint.pathname += `/${context.item.codename}/${context.variant.codename}`;
+
+    const request = wretch(deepCloneEndpoint.toString())
       .post()
       .json<IDeepCloneResponse>();
 
@@ -68,7 +69,7 @@
     if (totalTime.seconds() > 0) {
       result.push(
         `${
-          totalTime.seconds() + toRounded(totalTime.milliseconds() / 1000, 3)
+          totalTime.seconds() + round(totalTime.milliseconds() / 1000, 3)
         } ${$t("seconds")}`
       );
     }

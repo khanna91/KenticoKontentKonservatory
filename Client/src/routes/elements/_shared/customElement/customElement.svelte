@@ -45,7 +45,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
   import type { IContext, ICustomElement } from "./customElement";
-  import { toRounded } from "../../../../utilities/numbers";
+  import { round } from "lodash";
 
   export let value: any;
   export let config: {};
@@ -74,11 +74,9 @@
 
       for (let entry of entries) {
         if (entry.contentBoxSize && entry.contentBoxSize[0]) {
-          customElement?.setHeight(
-            toRounded(entry.contentBoxSize[0].blockSize)
-          );
+          customElement?.setHeight(round(entry.contentBoxSize[0].blockSize));
         } else {
-          customElement?.setHeight(toRounded(entry.contentRect.height));
+          customElement?.setHeight(round(entry.contentRect.height));
         }
       }
     });
@@ -106,7 +104,7 @@
   }
 
   $: {
-    height !== undefined && customElement?.setHeight(toRounded(height));
+    height !== undefined && customElement?.setHeight(round(height));
   }
 </script>
 

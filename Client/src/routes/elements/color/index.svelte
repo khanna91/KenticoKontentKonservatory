@@ -2,13 +2,13 @@
   import CustomElement, {
     translate,
   } from "../_shared/customElement/customElement.svelte";
-  import { toRounded } from "../../../utilities/numbers";
   import tinycolor from "tinycolor2";
   import Loading from "../../../shared/loading.svelte";
   import translations from "./_resources";
   import sharedTranslations from "./../_shared/resources";
   import { fade } from "svelte/transition";
   import Invalid from "../_shared/customElement/invalid.svelte";
+import { round } from "lodash";
 
   interface IColorConfig {
     presets: string[];
@@ -45,9 +45,9 @@
     const { h, s, l } = tinyColor.toHsl();
     const { r, g, b } = tinyColor.toRgb();
 
-    hue = toRounded(h);
-    saturation = toRounded(s * 100);
-    lightness = toRounded(l * 100);
+    hue = round(h);
+    saturation = round(s * 100);
+    lightness = round(l * 100);
     red = r;
     green = g;
     blue = b;

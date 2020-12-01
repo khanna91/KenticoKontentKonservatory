@@ -4,15 +4,23 @@
   export let showActions: boolean;
   export let imageUrl: string;
   export let name: string;
+  export let title: string;
   export let selected: boolean;
   export let thumbnailUrl: string;
   export let detail: string;
+  export let size: number = 3;
   export let delay: number = 0;
   export let onRemove: () => void;
   export let onClick: () => void;
+
+  let container: HTMLDivElement;
+
+  $: if (container) {
+    container.style.setProperty("--size", `${size}`);
+  }
 </script>
 
-<div class="wrapper" in:fly={{ delay }} out:fade>
+<div class="wrapper" bind:this={container} in:fly={{ delay }} out:fade>
   <div class="content" class:selected on:click={onClick}>
     {#if showActions}
       <div class="actions">
@@ -27,29 +35,37 @@
       </div>
     {/if}
     {#if onClick}
-      <div class="preview">
-        <img class="image" alt={name} src={thumbnailUrl} />
+      <div class="preview" {title}>
+        <slot name="image">
+          <img class="image" alt={name} src={thumbnailUrl} />
+        </slot>
       </div>
     {:else}
       <a target="_blank" rel="noopener noreferrer" href={imageUrl}>
-        <div class="preview">
-          <img class="image" alt={name} src={thumbnailUrl} />
+        <div class="preview" {title}>
+          <slot name="image">
+            <img class="image" alt={name} src={thumbnailUrl} />
+          </slot>
         </div>
       </a>
     {/if}
-    <div class="bottom">
-      <span class="name">{name}</span>
-      <div class="details"><span class="detail">{detail}</span></div>
-    </div>
+    {#if name || detail}
+      <div class="bottom">
+        {#if name}<span class="name">{name}</span>{/if}
+        {#if detail}
+          <div class="details"><span class="detail">{detail}</span></div>
+        {/if}
+      </div>
+    {/if}
   </div>
 </div>
 
 <style>
   .wrapper {
-    width: calc(100% / 3 - 1em);
+    width: calc(100% / var(--size) - 1em);
     margin: 0.5em;
     display: flex;
-    height: 14em;
+    height: calc(40em / var(--size));
   }
 
   .content {
@@ -165,6 +181,10 @@
     font-size: 0.8em;
     line-height: 1.1em;
     opacity: 1;
+    text-overflow: ellipsis;
+    max-height: 1em;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   .detail:after {
