@@ -1,3 +1,33 @@
+<script context="module" lang="ts">
+  import type { Preload } from "./_sapper";
+  import type { ISession } from "../shared/kontent";
+  import { deliveryClient } from "../shared/kontent";
+  import { Translation } from "../shared/models/Translation";
+
+  export const preload: Preload<{}, ISession> = async function (
+    this,
+    page,
+    session
+  ) {
+    const translations = (
+      await deliveryClient(session.kontent)
+        .items<Translation>()
+        .type(Translation.codeName)
+        .toPromise()
+    ).items.reduce((translations, translation) => {
+      translations[translation.system.codename] = translation.content.value;
+      return translations;
+    }, {});
+
+    session.kontent.translations = { en_us: { translation: translations } };
+
+    return {};
+  };
+</script>
+
+<script lang="ts">
+</script>
+
 <svelte:head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
@@ -33,25 +63,18 @@
     line-height: 1.2;
   }
 
-  :global(h1) {
-    font-size: 2em;
-  }
-
   :global(a) {
     color: inherit;
   }
 
-  :global(code) {
-    font-family: menlo, inconsolata, monospace;
-    font-size: calc(1em - 2px);
-    color: #555;
-    background-color: #f0f0f0;
-    padding: 0.2em 0.4em;
-    border-radius: 2px;
-  }
-
   :global(*) {
     box-sizing: border-box;
+  }
+
+  :global(section) {
+    display: flex;
+    max-width: 1600px;
+    margin: 0 auto;
   }
 
   @media (min-width: 400px) {
