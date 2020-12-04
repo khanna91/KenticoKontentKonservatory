@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { translate } from "./customElement.svelte";
+  import { translate } from "../../../../utilities/translateStore";
   import sharedTranslations from "../resources";
 
   const t = translate(sharedTranslations);

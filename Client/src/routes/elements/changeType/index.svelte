@@ -1,7 +1,6 @@
 <script lang="ts">
-  import CustomElement, {
-    translate,
-  } from "../_shared/customElement/customElement.svelte";
+  import CustomElement from "./../_shared/customElement/customElement.svelte";
+  import { translate } from "../../../utilities/translateStore";
   import Loading from "../../../shared/loading.svelte";
   import translations from "./_resources";
   import sharedTranslations from "../_shared/resources";
@@ -15,7 +14,7 @@
     IContentItem,
     IContentType,
   } from "../_shared/management";
-import { round } from "lodash";
+  import { round } from "lodash";
 
   interface IGetTypesResponse {
     currentType: IContentType;

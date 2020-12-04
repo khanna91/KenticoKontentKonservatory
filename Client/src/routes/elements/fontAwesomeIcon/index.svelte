@@ -1,7 +1,6 @@
 <script lang="ts">
-  import CustomElement, {
-    translate,
-  } from "../_shared/customElement/customElement.svelte";
+  import CustomElement from "./../_shared/customElement/customElement.svelte";
+  import { translate } from "../../../utilities/translateStore";
   import Loading from "../../../shared/loading.svelte";
   import translations from "./_resources";
   import sharedTranslations from "../_shared/resources";
@@ -10,7 +9,7 @@
   import { fade } from "svelte/transition";
   import Invalid from "../_shared/customElement/invalid.svelte";
   import wretch from "wretch";
-  import { flatMap } from "lodash";
+  import { debounce, flatMap } from "lodash";
 
   interface ISearchIcon {
     name: string;
@@ -43,6 +42,14 @@
   let disabled: boolean;
 
   let listOpen: boolean = false;
+  let rawFilter: string = "";
+
+  $: if (rawFilter !== "") {
+    debounceFilter(rawFilter);
+  }
+
+  const debounceFilter = debounce((rawFilter) => (filter = rawFilter), 500);
+
   let filter: string = "";
 
   let data: ISearchIcon[];
@@ -112,6 +119,7 @@
           <button
             class="button"
             on:click={() => {
+              rawFilter = '';
               filter = '';
               listOpen = false;
             }}>
@@ -139,7 +147,7 @@
                 class="input"
                 type="text"
                 placeholder={$t('placeholder')}
-                bind:value={filter} />
+                bind:value={rawFilter} />
             </label>
           </div>
           <div class="group wrap">
@@ -149,6 +157,7 @@
                 size={6}
                 onClick={() => {
                   value.icon = { name: icon.name, label: icon.label, unicode: icon.unicode, style: icon.style, svg: icon.svg, cssClass: `fa${icon.style[0]} fa-${icon.name}` };
+                  rawFilter = '';
                   filter = '';
                   listOpen = false;
                 }}>

@@ -1,14 +1,13 @@
 <script lang="ts">
-  import CustomElement, {
-    translate,
-  } from "../_shared/customElement/customElement.svelte";
+  import CustomElement from "./../_shared/customElement/customElement.svelte";
+  import { translate } from "../../../utilities/translateStore";
   import tinycolor from "tinycolor2";
   import Loading from "../../../shared/loading.svelte";
   import translations from "./_resources";
   import sharedTranslations from "./../_shared/resources";
   import { fade } from "svelte/transition";
   import Invalid from "../_shared/customElement/invalid.svelte";
-import { round } from "lodash";
+  import { round } from "lodash";
 
   interface IColorConfig {
     presets: string[];
