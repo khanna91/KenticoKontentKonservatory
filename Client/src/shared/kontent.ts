@@ -3,7 +3,7 @@ import { DeliveryClient, IContentItem, TypeResolver } from '@kentico/kontent-del
 import { Code } from './models/Code';
 import { CustomElement } from './models/CustomElement';
 import { Icon } from './models/Icon';
-import { Site } from './models/Site';
+import { ISite, Site } from './models/Site';
 import { Tag } from './models/Tag';
 import { Translation } from './models/Translation';
 
@@ -13,6 +13,7 @@ interface IKontent {
   projectId: string;
   previewApiKey: string;
   translations: Resource;
+  site: ISite;
 }
 
 export interface ISession {

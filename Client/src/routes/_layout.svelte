@@ -3,12 +3,19 @@
   import type { ISession } from "../shared/kontent";
   import { deliveryClient } from "../shared/kontent";
   import { Translation } from "../shared/models/Translation";
+  import type { Site } from "../shared/models/Site";
 
   export const preload: Preload<{}, ISession> = async function (
     this,
     page,
     session
   ) {
+    const site = await deliveryClient(session.kontent)
+      .item<Site>("site")
+      .toPromise();
+
+    session.kontent.site = { name: site.item.name.value };
+
     const translations = (
       await deliveryClient(session.kontent)
         .items<Translation>()

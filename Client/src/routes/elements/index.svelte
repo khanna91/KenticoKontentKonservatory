@@ -7,10 +7,10 @@
     extractComponents,
     replaceComponents,
   } from "../../shared/kontent";
-  import { Site } from "../../shared/models/Site";
   import type { ICode } from "../../shared/models/Code";
   import { Code as CodeModel } from "../../shared/models/Code";
   import type { ICustomElement } from "../../shared/models/CustomElement";
+  import { CustomElement } from "../../shared/models/CustomElement";
   import type { Resource } from "i18next";
 
   interface IIcon {
@@ -46,16 +46,15 @@
       ])
     );
 
-    const site = (
+    const customElements = (
       await deliveryClient(session.kontent)
-        .items<Site>()
-        .type(Site.codeName)
-        .depthParameter(6)
+        .items<CustomElement>()
+        .type(CustomElement.codeName)
         .queryConfig({
           richTextResolver,
         })
         .toPromise()
-    ).items[0];
+    ).items;
 
     const icons = (
       await deliveryClient(session.kontent)
@@ -66,8 +65,8 @@
 
     return {
       translations: session.kontent.translations,
-      name: site.name.value,
-      customElements: site.custom_elements.value.map((element) => ({
+      name: session.kontent.site.name,
+      customElements: customElements.map((element) => ({
         name: element.name.value,
         codeName: element.system.codename,
         description: element.description.resolveHtml(),
@@ -78,6 +77,7 @@
         tags: element.tags.value.map((tag) => ({
           name: tag.name.value,
           codeName: tag.system.codename,
+          synonyms: tag.synonyms.value,
         })),
         route: element.route.value,
         github: element.github.value,
@@ -136,6 +136,48 @@
     }
   };
 
+  let filter: string = "";
+
+  $: if (filter) {
+    selectedElement = undefined;
+    history.replaceState(
+      undefined,
+      undefined,
+      `${window.location.origin}${window.location.pathname}`
+    );
+  }
+
+  $: sortedElements = sortArray(
+    customElements.filter((customElement) => {
+      if (filter === "") {
+        return true;
+      }
+
+      const matches = (value: string) => value.match(new RegExp(filter, "gi"));
+
+      if (matches(customElement.name)) {
+        return true;
+      }
+
+      if (
+        customElement.tags.some(
+          (tag) => matches(tag.name) || matches(tag.synonyms)
+        )
+      ) {
+        return true;
+      }
+
+      if (matches(customElement.description)) {
+        return true;
+      }
+
+      return false;
+    }),
+    {
+      by: ["name"],
+    }
+  );
+
   const sampleIcon = icons.find((icon) => icon.codeName == "code");
   const gitHubIcon = icons.find((icon) => icon.codeName == "github_icon");
 
@@ -149,9 +191,13 @@
 <h1>{name}</h1>
 <section>
   <div class="list">
-    {#each sortArray(customElements, {
-      by: ['name'],
-    }) as customElement (customElement.name)}
+    <div class="filter">
+      <input
+        type="text"
+        placeholder={$t('filter_custom_elements')}
+        bind:value={filter} />
+    </div>
+    {#each sortedElements as customElement (customElement.name)}
       <div
         class="item"
         id={customElement.codeName}
@@ -205,6 +251,24 @@
     text-transform: uppercase;
     font-weight: 700;
     margin: 0 0 0.5em 0;
+  }
+
+  .filter {
+    display: flex;
+  }
+
+  .filter input {
+    flex: 1;
+    margin: 0.2em 0.2em 0.5em;
+    padding: 0.3em;
+    font-size: 1.2em;
+    border: none;
+    border-bottom: #cacaca solid;
+  }
+
+  .filter input:focus {
+    outline: none;
+    border-bottom: #727272 solid;
   }
 
   .list {
