@@ -136,7 +136,7 @@
             <Loading />
           {:then dataResult}
             <div class="group wrap">
-              {#each dataResult.search.edges.map((edge) => edge.node) as product, index (product.id)}
+              {#each dataResult.search.edges.map((edge) => edge.node) as product (product.id)}
                 <ObjectTile
                   name={product.name}
                   detail={formatProductPrice(product.variants[0].priceVariants)}

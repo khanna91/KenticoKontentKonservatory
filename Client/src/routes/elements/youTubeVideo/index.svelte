@@ -120,7 +120,7 @@
         <Loading />
       {:else if dataResult}
         <div class="group wrap" transition:fly={{ y: 80, duration: 400 }}>
-          {#each dataResult.items as video, index (video.id)}
+          {#each dataResult.items as video (video.id)}
             <ObjectTile
               name={video.snippet.title}
               detail={moment(video.snippet.publishedAt).format('LLL')}

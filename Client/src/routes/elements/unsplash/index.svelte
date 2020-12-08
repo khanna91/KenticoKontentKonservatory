@@ -86,7 +86,7 @@
           <Loading />
         {:then result}
           <div class="group wrap" transition:fly={{ y: 80, duration: 400 }}>
-            {#each result.results as asset, index (asset.id)}
+            {#each result.results as asset (asset.id)}
               <ObjectTile
                 name={asset.description}
                 selected={value.assets.some((valueAsset) => valueAsset.id === asset.id)}

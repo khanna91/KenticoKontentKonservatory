@@ -145,7 +145,7 @@
               </label>
             </div>
             <div class="group wrap">
-              {#each filterData(result) as product, index (product.id)}
+              {#each filterData(result) as product (product.id)}
                 <ObjectTile
                   name={product.title}
                   detail={formatProductPrice(product.variants.edges[0].node.priceV2)}
