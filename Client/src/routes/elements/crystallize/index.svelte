@@ -27,19 +27,14 @@
   let context: IContext;
   let disabled: boolean;
 
-  let listOpen: boolean = false;
-
   $: graphQLClient = config && new GraphQLClient(config.graphqlEndpoint);
 
+  let listOpen: boolean = false;
+  let filter: string;
   let rawFilter: string = "";
-
-  $: if (rawFilter !== "") {
-    debounceFilter(rawFilter);
-  }
-
   const debounceFilter = debounce((rawFilter) => (filter = rawFilter), 1000);
 
-  let filter: string;
+  $: rawFilter !== "" && debounceFilter(rawFilter);
 
   $: data =
     filter &&
@@ -75,6 +70,12 @@
     }
   `);
 
+  const closeList = () => {
+    listOpen = false;
+    filter = undefined;
+    rawFilter = "";
+  };
+
   const formatProductPrice = (priceVariants: IPriceVariant[]) => {
     var currencyMap = new Map(config.currencyMap);
 
@@ -105,15 +106,7 @@
             {$t('open')}
           </button>
         {:else}
-          <button
-            class="button"
-            on:click={() => {
-              rawFilter = '';
-              data = undefined;
-              listOpen = false;
-            }}>
-            {$t('close')}
-          </button>
+          <button class="button" on:click={closeList}> {$t('close')} </button>
         {/if}
         {#if value.product}
           <button
@@ -149,12 +142,9 @@
                   detail={formatProductPrice(product.variants[0].priceVariants)}
                   imageUrl={product.variants[0].images[0].url}
                   thumbnailUrl={product.variants[0].images[0].url}
-                  delay={index * 50}
                   onClick={() => {
                     value.product = product;
-                    rawFilter = '';
-                    data = undefined;
-                    listOpen = false;
+                    closeList();
                   }} />
               {/each}
             </div>

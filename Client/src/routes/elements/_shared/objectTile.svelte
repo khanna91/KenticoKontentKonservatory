@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { fade, fly } from "svelte/transition";
-
   export let showActions: boolean;
   export let imageUrl: string;
   export let name: string;
@@ -9,7 +7,6 @@
   export let thumbnailUrl: string;
   export let detail: string;
   export let size: number = 3;
-  export let delay: number = 0;
   export let onRemove: () => void;
   export let onClick: () => void;
 
@@ -20,7 +17,7 @@
   }
 </script>
 
-<div class="wrapper" bind:this={container} in:fly={{ delay }} out:fade>
+<div class="wrapper" bind:this={container}>
   <div class="content" class:selected on:click={onClick}>
     {#if showActions}
       <div class="actions">

@@ -25,7 +25,7 @@
   let disabled: boolean;
 
   let listOpen: boolean = false;
-  let filter: string;
+  let filter: string = "";
 
   $: graphQLClient =
     config &&
@@ -69,6 +69,33 @@
     }
   `);
 
+  const closeList = () => {
+    listOpen = false;
+    filter = "";
+  };
+
+  const filterData = (result: IQueryRoot) =>
+    result.products.edges
+      .map((edge) => edge.node)
+      .filter((product) => {
+        if (!filter) {
+          return true;
+        }
+
+        const matches = (value: string) =>
+          value.match(new RegExp(filter, "gi"));
+
+        if (matches(product.title)) {
+          return true;
+        }
+
+        if (matches(product.descriptionHtml)) {
+          return true;
+        }
+
+        return false;
+      });
+
   const formatProductPrice = (price: IPriceV2) => {
     const { amount, currencyCode } = price;
 
@@ -90,14 +117,7 @@
             {$t('open')}
           </button>
         {:else}
-          <button
-            class="button"
-            on:click={() => {
-              filter = '';
-              listOpen = false;
-            }}>
-            {$t('close')}
-          </button>
+          <button class="button" on:click={closeList}> {$t('close')} </button>
         {/if}
         {#if value.product}
           <button
@@ -112,7 +132,7 @@
         {#if listOpen}
           {#await data}
             <Loading />
-          {:then dataResult}
+          {:then result}
             <div class="group" transition:fade>
               <label class="group column filter"><div class="label">
                   {$t('search')}
@@ -125,37 +145,15 @@
               </label>
             </div>
             <div class="group wrap">
-              {#each dataResult.products.edges
-                .map((edge) => edge.node)
-                .filter((product) => {
-                  if (!filter) {
-                    return true;
-                  }
-
-                  const lowerFilter = filter.toLowerCase();
-
-                  if (product.title.toLowerCase().includes(lowerFilter)) {
-                    return true;
-                  }
-
-                  if (product.descriptionHtml
-                      .toLowerCase()
-                      .includes(lowerFilter)) {
-                    return true;
-                  }
-
-                  return false;
-                }) as product, index (product.id)}
+              {#each filterData(result) as product, index (product.id)}
                 <ObjectTile
                   name={product.title}
                   detail={formatProductPrice(product.variants.edges[0].node.priceV2)}
                   imageUrl={product.images.edges[0].node.originalSrc}
                   thumbnailUrl={product.images.edges[0].node.originalSrc}
-                  delay={index * 50}
                   onClick={() => {
                     value.product = product;
-                    filter = '';
-                    listOpen = false;
+                    closeList();
                   }} />
               {/each}
             </div>

@@ -42,15 +42,11 @@
   let disabled: boolean;
 
   let listOpen: boolean = false;
+  let filter: string;
   let rawFilter: string = "";
+  const debounceFilter = debounce((rawFilter) => (filter = rawFilter), 1000);
 
-  $: if (rawFilter !== "") {
-    debounceFilter(rawFilter);
-  }
-
-  const debounceFilter = debounce((rawFilter) => (filter = rawFilter), 500);
-
-  let filter: string = "";
+  $: rawFilter !== "" && debounceFilter(rawFilter);
 
   let data: ISearchIcon[];
 
@@ -79,6 +75,12 @@
     });
   };
 
+  const closeList = () => {
+    listOpen = false;
+    filter = undefined;
+    rawFilter = "";
+  };
+
   $: filteredData = data && filterData(filter);
 
   const filterData = (filter: string) => {
@@ -88,14 +90,14 @@
       return data.slice(0, 100);
     }
 
-    const lowerFilter = filter.toLowerCase();
+    const matches = (value: string) => value.match(new RegExp(filter, "gi"));
 
     for (const icon of data) {
       if (results.length === 100) {
         break;
       }
 
-      if (icon.search.toLowerCase().includes(lowerFilter)) {
+      if (matches(icon.search)) {
         results.push(icon);
         continue;
       }
@@ -116,15 +118,7 @@
             {$t('open')}
           </button>
         {:else}
-          <button
-            class="button"
-            on:click={() => {
-              rawFilter = '';
-              filter = '';
-              listOpen = false;
-            }}>
-            {$t('close')}
-          </button>
+          <button class="button" on:click={closeList}> {$t('close')} </button>
         {/if}
         {#if value.icon}
           <button
@@ -157,9 +151,7 @@
                 size={6}
                 onClick={() => {
                   value.icon = { name: icon.name, label: icon.label, unicode: icon.unicode, style: icon.style, svg: icon.svg, cssClass: `fa${icon.style[0]} fa-${icon.name}` };
-                  rawFilter = '';
-                  filter = '';
-                  listOpen = false;
+                  closeList();
                 }}>
                 <div slot="image" class="tile">
                   {@html icon.svg}
