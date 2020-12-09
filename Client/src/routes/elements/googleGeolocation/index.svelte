@@ -47,14 +47,16 @@
       ...config.mapOptions,
     });
 
-    map.addListener("click", onClick);
-    map.addListener("center_changed", onCenterChanged);
+    if (!disabled) {
+      map.addListener("click", onClick);
+      map.addListener("center_changed", onCenterChanged);
 
-    search = new google.maps.places.Autocomplete(searchMount, {
-      origin: new google.maps.LatLng(value.coordinates),
-    } as google.maps.places.AutocompleteOptions);
+      search = new google.maps.places.Autocomplete(searchMount, {
+        origin: new google.maps.LatLng(value.coordinates),
+      } as google.maps.places.AutocompleteOptions);
 
-    search.addListener("place_changed", onPlaceChanged);
+      search.addListener("place_changed", onPlaceChanged);
+    }
 
     marker = new google.maps.Marker({
       position: map.getCenter(),

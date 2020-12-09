@@ -11,7 +11,7 @@
   export let config: {};
   export let context: IContext;
   export let height: number;
-  export let disabled: boolean;
+  export let disabled: boolean = true;
 
   let root: HTMLDivElement;
   let resizeObserver: ResizeObserver;
@@ -60,7 +60,7 @@
   });
 
   $: {
-    value && customElement?.setValue(JSON.stringify(value));
+    value && !disabled && customElement?.setValue(JSON.stringify(value));
   }
 
   $: {
