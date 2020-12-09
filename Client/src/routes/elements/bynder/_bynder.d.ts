@@ -12,10 +12,12 @@ export type AdditionalInfo = any & Partial<{ selectedFile: any }>;
 
 export interface IBynderOptions {
   onSuccess: (assets: IAsset[], additionalInfo?: AdditionalInfo) => void;
+  container: HTMLElement;
   language: string;
   mode: Mode;
   defaultDomain: string;
   assetTypes: AssetType[];
+  selectedAssets: string[];
 }
 
 export interface IAsset {

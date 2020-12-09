@@ -31,20 +31,29 @@
   let config: IBynderConfig;
   let disabled: boolean;
 
-  let loading: boolean = false;
+  let listOpen: boolean = false;
+  let container: HTMLDivElement;
 
   const onSuccess = (assets: IAsset[], additionalInfo?: AdditionalInfo) => {
     value.assets = assets;
-    loading = false;
+    listOpen = false;
+    container.textContent = "";
   };
 
-  $: {
-    config && (config.bynderOptions.onSuccess = onSuccess);
+  $: if (config && container) {
+    config.bynderOptions.onSuccess = onSuccess;
+    config.bynderOptions.container = container;
+  }
+
+  $: if (config) {
+    config.bynderOptions.selectedAssets = value.assets.map(
+      (asset) => asset.databaseId
+    );
   }
 
   const click = () => {
     BynderCompactView.open(config.bynderOptions);
-    loading = true;
+    listOpen = true;
   };
 
   const removeAsset = (asset: IAsset) => {
@@ -61,11 +70,17 @@
 </svelte:head>
 
 <CustomElement bind:value bind:config bind:disabled>
-  <div class:loading transition:fade>
+  <div transition:fade>
     {#if !disabled}
       <div class="group">
         <button class="button" on:click={click}> {$t('open')} </button>
+        {#if listOpen}
+          <button class="button" on:click={() => onSuccess(value.assets)}>
+            {$t('close')}
+          </button>
+        {/if}
       </div>
+      <div class:listOpen bind:this={container} />
     {/if}
     {#if value.assets}
       <div class="group wrap">
@@ -90,7 +105,7 @@
 </CustomElement>
 
 <style>
-  .loading {
-    height: 500px;
+  .listOpen {
+    height: 40em;
   }
 </style>
