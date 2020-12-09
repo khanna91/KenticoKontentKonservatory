@@ -201,14 +201,15 @@
       <div
         class="group"
         id={customElement.codename}
-        class:selected={selectedElement == customElement}
-        on:click={() => {
-          if (selectedElement !== customElement) {
-            selectedElement = customElement;
-            history.replaceState(undefined, undefined, `${window.location.origin}${window.location.pathname}#${customElement.codename}`);
-          }
-        }}>
-        <div class="content">
+        class:selected={selectedElement == customElement}>
+        <div
+          class="content"
+          on:click={() => {
+            if (selectedElement !== customElement) {
+              selectedElement = customElement;
+              history.replaceState(undefined, undefined, `${window.location.origin}${window.location.pathname}#${customElement.codename}`);
+            }
+          }}>
           <h2 class="name">{customElement.name}</h2>
           {#if selectedElement == customElement}
             {#each sortArray(customElement.tags, {
@@ -280,7 +281,7 @@
     box-shadow: #afafaf 0em 0.2em 0.4em;
   }
 
-  .group:not(.selected):hover .content {
+  .group:not(.selected) .content:hover {
     box-shadow: #afafaf 0em 0em 0.4em;
     background: white;
     cursor: pointer;

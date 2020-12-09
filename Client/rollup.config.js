@@ -22,11 +22,18 @@ const onwarn = (warning, onwarn) =>
   warning.code === "THIS_IS_UNDEFINED" ||
   onwarn(warning);
 
+const ignoreMarkdown = {
+  load: (id) => {
+    if (id.endsWith(".md")) return "";
+  },
+};
+
 export default {
   client: {
     input: config.client.input().replace(/\.js$/, ".ts"),
     output: config.client.output(),
     plugins: [
+      ignoreMarkdown,
       replace({
         "process.browser": true,
         "process.env.NODE_ENV": JSON.stringify(mode),
@@ -87,6 +94,7 @@ export default {
     input: { server: config.server.input().server.replace(/\.js$/, ".ts") },
     output: config.server.output(),
     plugins: [
+      ignoreMarkdown,
       replace({
         "process.browser": false,
         "process.env.NODE_ENV": JSON.stringify(mode),

@@ -1,4 +1,4 @@
-# HubSpot Form
+# HubSpot form
 
 This contains code for the HubSpot form custom element.
 
