@@ -30,12 +30,12 @@ export const deliveryClient = (options: Partial<IKontent>) => {
       usePreviewMode: previewApiKey !== undefined,
     },
     typeResolvers: [
-      new TypeResolver(Site.codeName, () => new Site()),
-      new TypeResolver(Code.codeName, () => new Code()),
-      new TypeResolver(CustomElement.codeName, () => new CustomElement()),
-      new TypeResolver(Icon.codeName, () => new Icon()),
-      new TypeResolver(Tag.codeName, () => new Tag()),
-      new TypeResolver(Translation.codeName, () => new Translation()),
+      new TypeResolver(Site.codename, () => new Site()),
+      new TypeResolver(Code.codename, () => new Code()),
+      new TypeResolver(CustomElement.codename, () => new CustomElement()),
+      new TypeResolver(Icon.codename, () => new Icon()),
+      new TypeResolver(Tag.codename, () => new Tag()),
+      new TypeResolver(Translation.codename, () => new Translation()),
     ],
   });
 };
@@ -45,9 +45,9 @@ export const extractComponents = <T>(
   mappings: Map<string, (item: IContentItem) => T>
 ) => (item: IContentItem) => {
   for (const entry of mappings) {
-    const [codeName, resolver] = entry;
+    const [codename, resolver] = entry;
 
-    if (codeName === item.system.type) {
+    if (codename === item.system.type) {
       components.set(item.system.id, resolver(item));
     }
   }
@@ -70,9 +70,9 @@ export const replaceComponents = <T>(
 
   for (const placeholder of placeholders) {
     for (const entry of replaceMap) {
-      const [codeName, constructor] = entry;
+      const [codename, constructor] = entry;
 
-      if (codeName === placeholder.dataset.itemtype) {
+      if (codename === placeholder.dataset.itemtype) {
         constructor({
           target: placeholder.parentNode,
           hydrate: true,

@@ -5,6 +5,6 @@ export interface ICode {
 }
 
 export class Code extends ContentItem {
-  static codeName = "code";
+  static codename = "code";
   code!: Elements.TextElement;
 }

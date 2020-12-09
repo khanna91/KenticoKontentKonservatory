@@ -1,13 +1,13 @@
 import { ContentItem, Elements } from '@kentico/kontent-delivery';
 
 export interface ITag {
-  codeName: string;
+  codename: string;
   name: string;
   synonyms: string;
 }
 
 export class Tag extends ContentItem {
-  static codeName = "tag";
+  static codename = "tag";
   name!: Elements.TextElement;
   synonyms!: Elements.TextElement;
 }

@@ -86,7 +86,8 @@
       ) ||
       priceVariants.find(
         (priceVariant) => config.defaultCurrency === priceVariant.currency
-      );
+      ) ||
+      priceVariants[0];
 
     return new Intl.NumberFormat(undefined, {
       style: "currency",

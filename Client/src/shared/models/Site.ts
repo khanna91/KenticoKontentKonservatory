@@ -7,7 +7,7 @@ export interface ISite {
 }
 
 export class Site extends ContentItem {
-  static codeName = "site";
+  static codename = "site";
   name!: Elements.TextElement;
   custom_elements!: Elements.LinkedItemsElement<CustomElement>;
 }

@@ -3,7 +3,7 @@ import { ContentItem, Elements } from '@kentico/kontent-delivery';
 import type { ITag, Tag } from "./Tag";
 
 export interface ICustomElement {
-  codeName: string;
+  codename: string;
   name: string;
   description: string;
   image: {
@@ -16,7 +16,7 @@ export interface ICustomElement {
 }
 
 export class CustomElement extends ContentItem {
-  static codeName = "custom_element";
+  static codename = "custom_element";
   name!: Elements.TextElement;
   description!: Elements.RichTextElement;
   image!: Elements.AssetsElement;

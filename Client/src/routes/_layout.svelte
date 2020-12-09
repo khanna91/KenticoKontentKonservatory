@@ -19,7 +19,7 @@
     const translations = (
       await deliveryClient(session.kontent)
         .items<Translation>()
-        .type(Translation.codeName)
+        .type(Translation.codename)
         .toPromise()
     ).items.reduce((translations, translation) => {
       translations[translation.system.codename] = translation.content.value;

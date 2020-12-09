@@ -15,7 +15,7 @@
 
   interface IIcon {
     name: string;
-    codeName: string;
+    codename: string;
     label: string;
     style: string;
     unicode: string;
@@ -38,7 +38,7 @@
       components,
       new Map([
         [
-          CodeModel.codeName,
+          CodeModel.codename,
           (item) => ({
             code: (item as CodeModel).code.value,
           }),
@@ -49,7 +49,7 @@
     const customElements = (
       await deliveryClient(session.kontent)
         .items<CustomElement>()
-        .type(CustomElement.codeName)
+        .type(CustomElement.codename)
         .queryConfig({
           richTextResolver,
         })
@@ -59,7 +59,7 @@
     const icons = (
       await deliveryClient(session.kontent)
         .items<Icon>()
-        .type(Icon.codeName)
+        .type(Icon.codename)
         .toPromise()
     ).items;
 
@@ -68,7 +68,7 @@
       name: session.kontent.site.name,
       customElements: customElements.map((element) => ({
         name: element.name.value,
-        codeName: element.system.codename,
+        codename: element.system.codename,
         description: element.description.resolveHtml(),
         image: {
           src: element.image.value[0].url,
@@ -76,7 +76,7 @@
         },
         tags: element.tags.value.map((tag) => ({
           name: tag.name.value,
-          codeName: tag.system.codename,
+          codename: tag.system.codename,
           synonyms: tag.synonyms.value,
         })),
         route: element.route.value,
@@ -85,7 +85,7 @@
       components,
       icons: icons.map((icon) => ({
         ...JSON.parse(icon.icon.value).icon,
-        codeName: icon.system.codename,
+        codename: icon.system.codename,
       })),
     };
   };
@@ -107,14 +107,14 @@
   let selectedElement: ICustomElement;
 
   const replaceMap = new Map<string, SvelteConstructor>([
-    [CodeModel.codeName, (args) => new Code(args)],
+    [CodeModel.codename, (args) => new Code(args)],
   ]);
 
   onMount(() => {
     if (window.location.hash) {
       selectedElement = customElements.find(
         (customElement) =>
-          customElement.codeName == window.location.hash.slice(1)
+          customElement.codename == window.location.hash.slice(1)
       );
     }
   });
@@ -123,7 +123,7 @@
 
   const scrollToElement = async () => {
     if (selectedElement) {
-      const listItem = document.getElementById(selectedElement.codeName);
+      const listItem = document.getElementById(selectedElement.codename);
 
       if (listItem) {
         await tick();
@@ -178,8 +178,8 @@
     }
   );
 
-  const sampleIcon = icons.find((icon) => icon.codeName == "code");
-  const gitHubIcon = icons.find((icon) => icon.codeName == "github_icon");
+  const sampleIcon = icons.find((icon) => icon.codename == "code");
+  const gitHubIcon = icons.find((icon) => icon.codename == "github_icon");
 
   const t = translate(translations);
 </script>
@@ -199,13 +199,13 @@
     </div>
     {#each sortedElements as customElement (customElement.name)}
       <div
-        class="item"
-        id={customElement.codeName}
+        class="group"
+        id={customElement.codename}
         class:selected={selectedElement == customElement}
         on:click={() => {
           if (selectedElement !== customElement) {
             selectedElement = customElement;
-            history.replaceState(undefined, undefined, `${window.location.origin}${window.location.pathname}#${customElement.codeName}`);
+            history.replaceState(undefined, undefined, `${window.location.origin}${window.location.pathname}#${customElement.codename}`);
           }
         }}>
         <div class="content">
@@ -213,7 +213,7 @@
           {#if selectedElement == customElement}
             {#each sortArray(customElement.tags, {
               by: ['name'],
-            }) as tag (tag.codeName)}
+            }) as tag (tag.codename)}
               <span class="tag">{tag.name}</span>
             {/each}
             <div
@@ -229,19 +229,19 @@
               href={customElement.github}>{@html gitHubIcon.svg}{$t('github')}</a>
           {/if}
         </div>
-        {#key selectedElement}
-          {#if selectedElement == customElement}
-            <img
-              class="image"
-              in:fly={{ y: 100, delay: 100 }}
-              src={selectedElement.image.src}
-              alt={selectedElement.image.alt} />
-          {/if}
-        {/key}
+        <div class="image">
+          {#key selectedElement}
+            {#if selectedElement == customElement}
+              <img
+                in:fly={{ y: 100, delay: 100 }}
+                src={selectedElement.image.src}
+                alt={selectedElement.image.alt} />
+            {/if}
+          {/key}
+        </div>
       </div>
     {/each}
   </div>
-  <div class="imagePad" />
 </section>
 
 <style>
@@ -276,45 +276,37 @@
     z-index: 1;
   }
 
-  .item {
-    padding: 1em;
-    border-radius: 0.5em;
-    border: transparent solid 0.3em;
-    z-index: -1;
-    display: flex;
-    position: relative;
-  }
-
-  .item.selected {
+  .group.selected .content {
     box-shadow: #afafaf 0em 0.2em 0.4em;
   }
 
-  .item:not(.selected) {
+  .group:not(.selected):hover .content {
+    box-shadow: #afafaf 0em 0em 0.4em;
+    background: white;
     cursor: pointer;
   }
 
-  .item:not(.selected):hover {
-    box-shadow: #afafaf 0em 0em 0.4em;
-    background: white;
-  }
-
-  .item.selected .description {
+  .group.selected .content .description {
     display: block;
   }
 
-  .item:not(.selected) .description {
+  .group:not(.selected) .content .description {
     display: none;
   }
 
   .content {
-    flex: 1;
+    flex: 2;
+    padding: 1em;
+    border-radius: 0.5em;
+    border: transparent solid 0.3em;
+    position: relative;
   }
 
   .name {
     margin: 0;
   }
 
-  .item.selected .name {
+  .group.selected .name {
     margin-bottom: 0.5em;
   }
 
@@ -327,6 +319,19 @@
     padding: 0.2em 0.6em;
     color: white;
     font-weight: 600;
+  }
+
+  :global(sup) {
+    display: inline-block;
+    border-style: solid;
+    color: #4c4d52;
+    border-color: #919194;
+    padding: 0.1em 0.2em;
+    font-size: 0.85em;
+    border-width: 0.1em;
+    border-radius: 0.25em;
+    vertical-align: initial;
+    line-height: 1.1em;
   }
 
   .badge {
@@ -349,15 +354,13 @@
     padding: 0 0.4em 0 0;
   }
 
-  .imagePad {
-    flex: 2;
-    margin: 0 0 0 1em;
+  .image {
+    padding-left: 1em;
+    flex: 3;
   }
 
-  .image {
-    position: absolute;
-    left: calc(100% + 2em);
-    max-height: 100%;
+  .image img {
+    max-width: 100%;
   }
 
   @media (max-width: 800px) {
@@ -365,12 +368,12 @@
       font-size: 3em;
     }
 
-    .item {
+    .group {
       flex-direction: column;
     }
 
-    .imagePad {
-      display: none;
+    .image {
+      padding: 1em 0 0;
     }
 
     .image {
