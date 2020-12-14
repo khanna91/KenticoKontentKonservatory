@@ -23,4 +23,19 @@ export class CustomElement extends ContentItem {
   tags!: Elements.LinkedItemsElement<Tag>;
   route!: Elements.UrlSlugElement;
   github!: Elements.TextElement;
+
+  getModel(): ICustomElement {
+    return {
+      name: this.name.value,
+      codename: this.system.codename,
+      description: this.description.resolveHtml(),
+      image: {
+        src: this.image.value[0].url,
+        alt: this.image.value[0].description,
+      },
+      tags: this.tags.value.map((tag) => tag.getModel()),
+      route: this.route.value,
+      github: this.github.value,
+    };
+  }
 }

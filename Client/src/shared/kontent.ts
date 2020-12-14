@@ -3,12 +3,14 @@ import { DeliveryClient, IContentItem, TypeResolver } from '@kentico/kontent-del
 import { Code } from './models/Code';
 import { CustomElement } from './models/CustomElement';
 import { Icon } from './models/Icon';
+import { Route } from './models/Route';
 import { ISite, Site } from './models/Site';
 import { Tag } from './models/Tag';
 import { Translation } from './models/Translation';
 
 import type { SvelteComponent } from "svelte/internal";
 import type { Resource } from "i18next";
+
 interface IKontent {
   projectId: string;
   previewApiKey: string;
@@ -31,6 +33,7 @@ export const deliveryClient = (options: Partial<IKontent>) => {
     },
     typeResolvers: [
       new TypeResolver(Site.codename, () => new Site()),
+      new TypeResolver(Route.codename, () => new Route()),
       new TypeResolver(Code.codename, () => new Code()),
       new TypeResolver(CustomElement.codename, () => new CustomElement()),
       new TypeResolver(Icon.codename, () => new Icon()),

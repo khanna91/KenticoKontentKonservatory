@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import type { Preload } from "../_sapper";
+  import type { Preload } from "@sapper/app";
   import { fly } from "svelte/transition";
   import type { ISession, SvelteConstructor } from "../../shared/kontent";
   import {
@@ -11,22 +11,11 @@
   import { Code as CodeModel } from "../../shared/models/Code";
   import type { ICustomElement } from "../../shared/models/CustomElement";
   import { CustomElement } from "../../shared/models/CustomElement";
-  import type { Resource } from "i18next";
-
-  interface IIcon {
-    name: string;
-    codename: string;
-    label: string;
-    style: string;
-    unicode: string;
-    svg: string;
-    cssClass: string;
-  }
+  import { Icon } from "../../shared/models/Icon";
+  import type { IIcon } from "../../shared/models/Icon";
 
   export const preload: Preload<
     {
-      translations: Resource;
-      name: string;
       customElements: ICustomElement[];
       components: Map<string, ICode>;
       icons: IIcon[];
@@ -36,14 +25,7 @@
     const components = new Map<string, ICode>();
     const richTextResolver = extractComponents(
       components,
-      new Map([
-        [
-          CodeModel.codename,
-          (item) => ({
-            code: (item as CodeModel).code.value,
-          }),
-        ],
-      ])
+      new Map([[CodeModel.codename, (item) => (item as CodeModel).getModel()]])
     );
 
     const customElements = (
@@ -64,29 +46,9 @@
     ).items;
 
     return {
-      translations: session.kontent.translations,
-      name: session.kontent.site.name,
-      customElements: customElements.map((element) => ({
-        name: element.name.value,
-        codename: element.system.codename,
-        description: element.description.resolveHtml(),
-        image: {
-          src: element.image.value[0].url,
-          alt: element.image.value[0].description,
-        },
-        tags: element.tags.value.map((tag) => ({
-          name: tag.name.value,
-          codename: tag.system.codename,
-          synonyms: tag.synonyms.value,
-        })),
-        route: element.route.value,
-        github: element.github.value,
-      })),
+      customElements: customElements.map((element) => element.getModel()),
       components,
-      icons: icons.map((icon) => ({
-        ...JSON.parse(icon.icon.value).icon,
-        codename: icon.system.codename,
-      })),
+      icons: icons.map((icon) => icon.getModel()),
     };
   };
 </script>
@@ -96,15 +58,15 @@
   import { onMount, tick } from "svelte";
   import Code from "../../shared/components/code.svelte";
   import { translate } from "../../utilities/translateStore";
-  import { Icon } from "../../shared/models/Icon";
+  import { stores } from "@sapper/app";
 
-  export let translations: Resource;
-  export let name: string;
   export let customElements: ICustomElement[];
   export let components: Map<string, ICode>;
   export let icons: IIcon[];
 
   let selectedElement: ICustomElement;
+
+  const { session } = stores<ISession>();
 
   const replaceMap = new Map<string, SvelteConstructor>([
     [CodeModel.codename, (args) => new Code(args)],
@@ -181,14 +143,9 @@
   const sampleIcon = icons.find((icon) => icon.codename == "code");
   const gitHubIcon = icons.find((icon) => icon.codename == "github_icon");
 
-  const t = translate(translations);
+  const t = translate($session.kontent.translations);
 </script>
 
-<svelte:head>
-  <title>{name}</title>
-</svelte:head>
-
-<h1>{name}</h1>
 <section>
   <div class="list">
     <div class="filter">
@@ -234,7 +191,7 @@
           {#key selectedElement}
             {#if selectedElement == customElement}
               <img
-                in:fly={{ y: 100, delay: 100 }}
+                in:fly={{ y: 100, delay: 200 }}
                 src={selectedElement.image.src}
                 alt={selectedElement.image.alt} />
             {/if}
@@ -246,14 +203,6 @@
 </section>
 
 <style>
-  h1 {
-    text-align: center;
-    font-size: 5em;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin: 0 0 0.5em 0;
-  }
-
   .filter {
     display: flex;
   }
@@ -277,30 +226,51 @@
     z-index: 1;
   }
 
-  .group.selected .content {
-    box-shadow: #afafaf 0em 0.2em 0.4em;
+  .group .content {
+    flex: 2;
+    padding: 1em;
+    position: relative;
+    overflow: hidden;
+    border-radius: 1em;
   }
 
-  .group:not(.selected) .content:hover {
-    box-shadow: #afafaf 0em 0em 0.4em;
-    background: white;
-    cursor: pointer;
-  }
-
-  .group.selected .content .description {
-    display: block;
+  .group:not(.selected) .content:before {
+    width: 300%;
+    height: 300%;
+    content: "";
+    left: -1em;
+    top: -1em;
+    position: absolute;
+    background: linear-gradient(
+      160deg,
+      white,
+      gainsboro 35.9%,
+      #81d272 36%,
+      white
+    );
+    transition: all 0.5s;
+    transform: translate(0%, 0%);
+    z-index: -1;
   }
 
   .group:not(.selected) .content .description {
     display: none;
   }
 
-  .content {
-    flex: 2;
-    padding: 1em;
-    border-radius: 0.5em;
-    border: transparent solid 0.3em;
-    position: relative;
+  .group:not(.selected) .content:hover {
+    cursor: pointer;
+  }
+
+  .group:not(.selected) .content:hover:before {
+    transform: translate(-45%, -45%);
+  }
+
+  .group.selected .content {
+    box-shadow: #afafaf 0em 0.2em 0.4em;
+  }
+
+  .group.selected .content .description {
+    display: block;
   }
 
   .name {
@@ -322,7 +292,7 @@
     font-weight: 600;
   }
 
-  :global(sup) {
+  .group :global(sup) {
     display: inline-block;
     border-style: solid;
     color: #4c4d52;
@@ -350,7 +320,7 @@
     background: #5d9b52;
   }
 
-  :global(.badge svg) {
+  .group :global(.badge svg) {
     height: 0.9em;
     padding: 0 0.4em 0 0;
   }
@@ -365,10 +335,6 @@
   }
 
   @media (max-width: 800px) {
-    h1 {
-      font-size: 3em;
-    }
-
     .group {
       flex-direction: column;
     }

@@ -7,4 +7,10 @@ export interface ICode {
 export class Code extends ContentItem {
   static codename = "code";
   code!: Elements.TextElement;
+
+  getModel(): ICode {
+    return {
+      code: this.code.value,
+    };
+  }
 }

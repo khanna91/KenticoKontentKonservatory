@@ -1,31 +1,33 @@
-<slot />
+<div>
+  <slot />
+</div>
 
 <style>
-  :global(.group) {
+  div :global(.group) {
     display: flex;
     margin-bottom: 0.5em;
   }
 
-  :global(.wrap) {
+  div :global(.wrap) {
     flex-wrap: wrap;
   }
 
-  :global(.column) {
+  div :global(.column) {
     flex-direction: column;
   }
 
-  :global(.item) {
+  div :global(.item) {
     flex: 1;
   }
 
-  :global(.label) {
+  div :global(.label) {
     font-size: 0.8em;
     font-weight: 600;
     color: #919194;
     margin-bottom: 0.5em;
   }
 
-  :global(.input) {
+  div :global(.input) {
     border: none;
     outline: none;
     font-size: 1em;
@@ -33,12 +35,12 @@
     width: 100%;
   }
 
-  :global(.input:focus) {
+  div :global(.input:focus) {
     border-color: #0a68f5 !important;
     outline: none;
   }
 
-  :global(.select) {
+  div :global(.select) {
     border: none;
     font-family: inherit;
     font-size: inherit;
@@ -46,11 +48,11 @@
     margin: 0.4em 0em;
   }
 
-  :global(.select:focus) {
+  div :global(.select:focus) {
     outline: none;
   }
 
-  :global(.button) {
+  div :global(.button) {
     font: inherit;
     display: inline-block;
     cursor: pointer;
@@ -68,13 +70,13 @@
     border-radius: 0.25em;
   }
 
-  :global(.button.destructive:focus, .button.destructive:hover) {
+  div :global(.button.destructive:focus, .button.destructive:hover) {
     color: #fff;
     background-color: #f02222;
     border-color: transparent;
   }
 
-  :global(.button:focus, .button:hover) {
+  div :global(.button:focus, .button:hover) {
     color: #4c4d52;
     background-color: rgba(76, 77, 82, 0.1);
     border-color: #919194;

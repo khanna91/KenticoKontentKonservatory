@@ -205,7 +205,7 @@
   }
 
   .input {
-    border: 0.1em solid #e0e0e0;
+    border: 0.1em solid #e0e0e0 !important;
     height: 2em;
     min-width: 0;
     padding: 0.25em 0.5em;

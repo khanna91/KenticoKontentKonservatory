@@ -85,11 +85,20 @@
   {/if}
 </div>
 
+<!-- Workaround for :global() styles not being removed: https://github.com/sveltejs/svelte/issues/5530 -->
+<div>
+  <body />
+</div>
+
 <style>
   @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic");
 
-  :global(body) {
+  body {
     font-family: Source Sans Pro, sans-serif;
     overflow: hidden;
+  }
+
+  div body {
+    display: none;
   }
 </style>

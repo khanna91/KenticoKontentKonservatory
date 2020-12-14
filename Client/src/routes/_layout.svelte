@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import type { Preload } from "./_sapper";
+  import type { Preload } from "@sapper/app";
   import type { ISession } from "../shared/kontent";
   import { deliveryClient } from "../shared/kontent";
   import { Translation } from "../shared/models/Translation";
@@ -10,11 +10,12 @@
     page,
     session
   ) {
-    const site = await deliveryClient(session.kontent)
-      .item<Site>("site")
-      .toPromise();
-
-    session.kontent.site = { name: site.item.name.value };
+    const site = (
+      await deliveryClient(session.kontent)
+        .item<Site>("site")
+        .depthParameter(6)
+        .toPromise()
+    ).item;
 
     const translations = (
       await deliveryClient(session.kontent)
@@ -26,6 +27,16 @@
       return translations;
     }, {});
 
+    if (
+      site === undefined ||
+      translations === {} ||
+      session.kontent === undefined ||
+      session.kontent.projectId === undefined
+    ) {
+      throw Error("Session was not injected as expected");
+    }
+
+    session.kontent.site = site.getModel();
     session.kontent.translations = { en_us: { translation: translations } };
 
     return {};
@@ -33,6 +44,20 @@
 </script>
 
 <script lang="ts">
+  import { stores } from "@sapper/app";
+
+  const { page, session } = stores<ISession>();
+
+  const nakedRoutes = $session.kontent.site.routes.reduce<string[]>(
+    (nakedRoutes, route) => {
+      if (route.options.some((option) => option === "naked")) {
+        nakedRoutes.push(`/${route.route}/`);
+      }
+
+      return nakedRoutes;
+    },
+    []
+  );
 </script>
 
 <svelte:head>
@@ -40,9 +65,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <meta name="theme-color" content="#333333" />
   <link rel="icon" type="image/png" href="favicon.png" />
+  <title>{$session.kontent.site.name}</title>
 </svelte:head>
 
-<slot />
+{#if nakedRoutes.some((route) => $page.path.startsWith(route))}
+  <slot />
+{:else}
+  <h1>{$session.kontent.site.name}</h1>
+  <slot />
+{/if}
 
 <style>
   :global(body) {
@@ -70,6 +101,14 @@
     line-height: 1.2;
   }
 
+  h1 {
+    text-align: center;
+    font-size: 5em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin: 0 0 0.5em 0;
+  }
+
   :global(a) {
     color: inherit;
   }
@@ -80,8 +119,21 @@
 
   :global(section) {
     display: flex;
+    flex-direction: column;
     max-width: 1600px;
     margin: 0 auto;
+  }
+
+  @media (max-width: 1600px) {
+    :global(section) {
+      max-width: 800px;
+    }
+  }
+
+  @media (max-width: 800px) {
+    h1 {
+      font-size: 3em;
+    }
   }
 
   @media (min-width: 400px) {
