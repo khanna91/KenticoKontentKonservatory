@@ -8,14 +8,14 @@
   } from "../../shared/kontent";
   import type { ICode } from "../../shared/models/Code";
   import { Code as CodeModel } from "../../shared/models/Code";
-  import type { ICustomElement } from "../../shared/models/CustomElement";
-  import { CustomElement } from "../../shared/models/CustomElement";
+  import type { IWebhook } from "../../shared/models/Webhook";
+  import { Webhook } from "../../shared/models/Webhook";
   import { Icon } from "../../shared/models/Icon";
   import type { IIcon } from "../../shared/models/Icon";
 
   export const preload: Preload<
     {
-      customElements: ICustomElement[];
+      webhooks: IWebhook[];
       components: Map<string, ICode>;
       icons: IIcon[];
     },
@@ -27,10 +27,10 @@
       new Map([[CodeModel.codename, (item) => (item as CodeModel).getModel()]])
     );
 
-    const customElements = (
+    const webhooks = (
       await deliveryClient(session.kontent)
-        .items<CustomElement>()
-        .type(CustomElement.codename)
+        .items<Webhook>()
+        .type(Webhook.codename)
         .queryConfig({
           richTextResolver,
         })
@@ -45,7 +45,7 @@
     ).items;
 
     return {
-      customElements: customElements.map((element) => element.getModel()),
+      webhooks: webhooks.map((webhook) => webhook.getModel()),
       components,
       icons: icons.map((icon) => icon.getModel()),
     };
@@ -58,13 +58,12 @@
   import Code from "../../shared/components/code.svelte";
   import { translate } from "../../utilities/translateStore";
   import { stores } from "@sapper/app";
-  import { fly } from "svelte/transition";
 
-  export let customElements: ICustomElement[];
+  export let webhooks: IWebhook[];
   export let components: Map<string, ICode>;
   export let icons: IIcon[];
 
-  let selectedElement: ICustomElement;
+  let selectedWebhook: IWebhook;
 
   const { session } = stores<ISession>();
 
@@ -74,18 +73,18 @@
 
   onMount(() => {
     if (window.location.hash) {
-      selectedElement = customElements.find(
+      selectedWebhook = webhooks.find(
         (customElement) =>
           customElement.codename == window.location.hash.slice(1)
       );
     }
   });
 
-  $: selectedElement && scrollToElement();
+  $: selectedWebhook && scrollToElement();
 
   const scrollToElement = async () => {
-    if (selectedElement) {
-      const listItem = document.getElementById(selectedElement.codename);
+    if (selectedWebhook) {
+      const listItem = document.getElementById(selectedWebhook.codename);
 
       if (listItem) {
         await tick();
@@ -101,7 +100,7 @@
   let filter: string = "";
 
   $: if (filter) {
-    selectedElement = undefined;
+    selectedWebhook = undefined;
     history.replaceState(
       undefined,
       undefined,
@@ -110,7 +109,7 @@
   }
 
   $: sortedElements = sortArray(
-    customElements.filter((customElement) => {
+    webhooks.filter((customElement) => {
       if (filter === "") {
         return true;
       }
@@ -140,7 +139,6 @@
     }
   );
 
-  const sampleIcon = icons.find((icon) => icon.codename == "code");
   const gitHubIcon = icons.find((icon) => icon.codename == "github_icon");
 
   const t = translate($session.kontent.translations);
@@ -151,24 +149,24 @@
     <div class="filter">
       <input
         type="text"
-        placeholder={$t('filter_custom_elements')}
+        placeholder={$t('filter_webhooks')}
         bind:value={filter} />
     </div>
     {#each sortedElements as customElement (customElement.name)}
       <div
         class="group"
         id={customElement.codename}
-        class:selected={selectedElement == customElement}>
+        class:selected={selectedWebhook == customElement}>
         <div
           class="content"
           on:click={() => {
-            if (selectedElement !== customElement) {
-              selectedElement = customElement;
+            if (selectedWebhook !== customElement) {
+              selectedWebhook = customElement;
               history.replaceState(undefined, undefined, `${window.location.origin}${window.location.pathname}#${customElement.codename}`);
             }
           }}>
           <h2 class="name">{customElement.name}</h2>
-          {#if selectedElement == customElement}
+          {#if selectedWebhook == customElement}
             {#each sortArray(customElement.tags, {
               by: ['name'],
             }) as tag (tag.codename)}
@@ -181,22 +179,10 @@
             </div>
             <a
               class="badge"
-              href={customElement.route}>{@html sampleIcon.svg}{$t('sample')}</a>
-            <a
-              class="badge"
               href={customElement.github}>{@html gitHubIcon.svg}{$t('github')}</a>
           {/if}
         </div>
-        <div class="image">
-          {#key selectedElement}
-            {#if selectedElement == customElement}
-              <img
-                in:fly={{ y: 100, delay: 200 }}
-                src={selectedElement.image.src}
-                alt={selectedElement.image.alt} />
-            {/if}
-          {/key}
-        </div>
+        <div class="image" />
       </div>
     {/each}
   </div>
@@ -328,10 +314,6 @@
   .image {
     padding-left: 1em;
     flex: 3;
-  }
-
-  .image img {
-    max-width: 100%;
   }
 
   @media (max-width: 800px) {

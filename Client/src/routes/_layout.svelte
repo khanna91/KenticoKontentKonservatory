@@ -71,7 +71,7 @@
 {#if nakedRoutes.some((route) => $page.path.startsWith(route))}
   <slot />
 {:else}
-  <h1>{$session.kontent.site.name}</h1>
+  <h1><a href="/">{$session.kontent.site.name}</a></h1>
   <slot />
 {/if}
 
@@ -107,6 +107,10 @@
     text-transform: uppercase;
     font-weight: 700;
     margin: 0 0 0.5em 0;
+  }
+
+  h1 a {
+    text-decoration: none;
   }
 
   :global(a) {

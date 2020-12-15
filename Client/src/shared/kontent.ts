@@ -7,10 +7,10 @@ import { Route } from './models/Route';
 import { ISite, Site } from './models/Site';
 import { Tag } from './models/Tag';
 import { Translation } from './models/Translation';
+import { Webhook } from './models/Webhook';
 
 import type { SvelteComponent } from "svelte/internal";
 import type { Resource } from "i18next";
-
 interface IKontent {
   projectId: string;
   previewApiKey: string;
@@ -36,6 +36,7 @@ export const deliveryClient = (options: Partial<IKontent>) => {
       new TypeResolver(Route.codename, () => new Route()),
       new TypeResolver(Code.codename, () => new Code()),
       new TypeResolver(CustomElement.codename, () => new CustomElement()),
+      new TypeResolver(Webhook.codename, () => new Webhook()),
       new TypeResolver(Icon.codename, () => new Icon()),
       new TypeResolver(Tag.codename, () => new Tag()),
       new TypeResolver(Translation.codename, () => new Translation()),
