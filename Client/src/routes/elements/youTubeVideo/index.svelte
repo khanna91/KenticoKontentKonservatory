@@ -57,20 +57,20 @@
         pageToken,
         q: filter,
       })
-      .then((result) => {
-        dataResult = result.result;
-        nextPageToken = result.result.nextPageToken;
-        prevPageToken = result.result.prevPageToken;
+      .then((data) => {
+        result = data.result;
+        nextPageToken = data.result.nextPageToken;
+        prevPageToken = data.result.prevPageToken;
       });
 
-  let dataResult: IYouTubeSearchListResponse;
+  let result: IYouTubeSearchListResponse;
 
   const closeList = () => {
     listOpen = false;
     filter = undefined;
     rawFilter = "";
     pageToken = undefined;
-    dataResult = undefined;
+    result = undefined;
   };
 
   const t = translate(translations, [sharedTranslations]);
@@ -116,11 +116,11 @@
           </label>
         </div>
       {/if}
-      {#if !dataResult && filter !== undefined}
+      {#if !result && filter !== undefined}
         <Loading />
-      {:else if dataResult}
-        <div class="group wrap" transition:fly={{ y: 80, duration: 400 }}>
-          {#each dataResult.items as video (video.id)}
+      {:else if result}
+        <div class="group wrap">
+          {#each result.items as video (video.id)}
             <ObjectTile
               name={video.snippet.title}
               detail={moment(video.snippet.publishedAt).format('LLL')}

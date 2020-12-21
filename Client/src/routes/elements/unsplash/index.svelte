@@ -5,12 +5,13 @@
   import translations from "./_resources";
   import sharedTranslations from "./../_shared/resources";
   import ObjectTile from "./../_shared/objectTile.svelte";
-  import Unsplash from "unsplash-js";
+  import { createApi } from "unsplash-js";
   import moment from "moment";
   import type { IPhoto } from "./_unsplash";
   import debounce from "lodash/debounce";
   import { fade, fly } from "svelte/transition";
   import Invalid from "../_shared/customElement/invalid.svelte";
+  import type { ApiResponse } from "unsplash-js/dist/helpers/response";
 
   interface IUnsplashConfig {
     accessKey: string;
@@ -24,7 +25,7 @@
   let config: IUnsplashConfig;
   let disabled: boolean;
 
-  $: unsplash = config && new Unsplash({ accessKey: config.accessKey });
+  $: unsplash = config && createApi({ accessKey: config.accessKey });
 
   let listOpen: boolean = false;
   let filter: string;
@@ -37,9 +38,9 @@
 
   $: data =
     filter &&
-    unsplash.search
-      .photos(filter, page, 9)
-      .then((result) => result.json() as Promise<{ results: IPhoto[] }>);
+    (unsplash.search.getPhotos({ query: filter, page, perPage: 9 }) as Promise<
+      ApiResponse<{ results: IPhoto[] }>
+    >);
 
   const closeList = () => {
     listOpen = false;
@@ -85,8 +86,8 @@
         {#await data}
           <Loading />
         {:then result}
-          <div class="group wrap" transition:fly={{ y: 80, duration: 400 }}>
-            {#each result.results as asset (asset.id)}
+          <div class="group wrap">
+            {#each result.response.results as asset (asset.id)}
               <ObjectTile
                 name={asset.description}
                 selected={value.assets.some((valueAsset) => valueAsset.id === asset.id)}
