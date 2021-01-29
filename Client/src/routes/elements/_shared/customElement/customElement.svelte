@@ -47,7 +47,7 @@
 
     customElement.init((element, elementContext) => {
       element.value && (value = JSON.parse(element.value));
-      config = element.config;
+      config = element.config ?? {};
       context = elementContext;
       disabled = element.disabled;
 
@@ -68,10 +68,9 @@
   }
 </script>
 
-<svelte:head>
-  <script src="https://app.kontent.ai/js-api/custom-element.js">
-  </script>
-</svelte:head>
+<svelte:head
+  ><script src="https://app.kontent.ai/js-api/custom-element.js">
+  </script></svelte:head>
 
 <div bind:this={root}>
   {#if !invalid}

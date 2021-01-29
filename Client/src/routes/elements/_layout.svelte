@@ -71,14 +71,14 @@
   }
 
   div :global(.button.destructive:focus, .button.destructive:hover) {
-    color: #fff;
-    background-color: #f02222;
-    border-color: transparent;
+    color: #fff !important;
+    background-color: #f02222 !important;
+    border-color: transparent !important;
   }
 
   div :global(.button:focus, .button:hover) {
-    color: #4c4d52;
-    background-color: rgba(76, 77, 82, 0.1);
-    border-color: #919194;
+    color: #4c4d52 !important;
+    background-color: rgba(76, 77, 82, 0.1) !important;
+    border-color: #919194 !important;
   }
 </style>
