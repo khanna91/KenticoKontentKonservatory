@@ -13,6 +13,8 @@ export interface ICustomElement {
   tags: ITag[];
   route: string;
   github: string;
+  options: "demo"[];
+  demoConfig: string;
 }
 
 export class CustomElement extends ContentItem {
@@ -23,6 +25,8 @@ export class CustomElement extends ContentItem {
   tags!: Elements.LinkedItemsElement<Tag>;
   route!: Elements.UrlSlugElement;
   github!: Elements.TextElement;
+  options!: Elements.MultipleChoiceElement;
+  demo_config!: Elements.TextElement;
 
   getModel(): ICustomElement {
     return {
@@ -36,6 +40,8 @@ export class CustomElement extends ContentItem {
       tags: this.tags.value.map((tag) => tag.getModel()),
       route: this.route.value,
       github: this.github.value,
+      options: this.options.value.map((option) => option.codename) as any[],
+      demoConfig: this.demo_config.value,
     };
   }
 }
