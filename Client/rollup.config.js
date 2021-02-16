@@ -10,6 +10,7 @@ import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import config from "sapper/config/rollup.js";
 import pkg from "./package.json";
+import json from "@rollup/plugin-json";
 
 const mode = process.env.NODE_ENV;
 const dev = mode === "development";
@@ -34,6 +35,7 @@ export default {
     output: config.client.output(),
     plugins: [
       ignoreMarkdown,
+      json(),
       replace({
         "process.browser": true,
         "process.env.NODE_ENV": JSON.stringify(mode),
@@ -97,6 +99,7 @@ export default {
     output: config.server.output(),
     plugins: [
       ignoreMarkdown,
+      json(),
       replace({
         "process.browser": false,
         "process.env.NODE_ENV": JSON.stringify(mode),

@@ -81,4 +81,10 @@
     background-color: rgba(76, 77, 82, 0.1) !important;
     border-color: #919194 !important;
   }
+
+  @media (max-width: 800px) {
+    div :global(.group) {
+      flex-direction: column;
+    }
+  }
 </style>

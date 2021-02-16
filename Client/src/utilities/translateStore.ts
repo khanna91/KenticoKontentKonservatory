@@ -8,7 +8,7 @@ export const translate = (
   locale = "en_us"
 ) =>
   readable<TFunction>(
-    () => {},
+    () => "",
     (set) => {
       i18next
         .init({

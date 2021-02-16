@@ -8,14 +8,14 @@
   } from "../../shared/kontent";
   import type { ICode } from "../../shared/models/Code";
   import { Code as CodeModel } from "../../shared/models/Code";
-  import type { IWebhook } from "../../shared/models/Webhook";
-  import { Webhook } from "../../shared/models/Webhook";
+  import type { IApp } from "../../shared/models/App";
+  import { App } from "../../shared/models/App";
   import { Icon } from "../../shared/models/Icon";
   import type { IIcon } from "../../shared/models/Icon";
 
   export const preload: Preload<
     {
-      webhooks: IWebhook[];
+      apps: IApp[];
       components: Map<string, ICode>;
       icons: IIcon[];
     },
@@ -27,10 +27,10 @@
       new Map([[CodeModel.codename, (item) => (item as CodeModel).getModel()]])
     );
 
-    const webhooks = (
+    const apps = (
       await deliveryClient(session.kontent)
-        .items<Webhook>()
-        .type(Webhook.codename)
+        .items<App>()
+        .type(App.codename)
         .queryConfig({
           richTextResolver,
         })
@@ -45,7 +45,7 @@
     ).items;
 
     return {
-      webhooks: webhooks.map((webhook) => webhook.getModel()),
+      apps: apps.map((webhook) => webhook.getModel()),
       components,
       icons: icons.map((icon) => icon.getModel()),
     };
@@ -59,11 +59,11 @@
   import { translate } from "../../utilities/translateStore";
   import { stores } from "@sapper/app";
 
-  export let webhooks: IWebhook[];
+  export let apps: IApp[];
   export let components: Map<string, ICode>;
   export let icons: IIcon[];
 
-  let selectedWebhook: IWebhook;
+  let selectedApp: IApp;
 
   const { session } = stores<ISession>();
 
@@ -73,18 +73,18 @@
 
   onMount(() => {
     if (window.location.hash) {
-      selectedWebhook = webhooks.find(
+      selectedApp = apps.find(
         (customElement) =>
           customElement.codename == window.location.hash.slice(1)
       );
     }
   });
 
-  $: selectedWebhook && scrollToElement();
+  $: selectedApp && scrollToElement();
 
   const scrollToElement = async () => {
-    if (selectedWebhook) {
-      const listItem = document.getElementById(selectedWebhook.codename);
+    if (selectedApp) {
+      const listItem = document.getElementById(selectedApp.codename);
 
       if (listItem) {
         await tick();
@@ -100,7 +100,7 @@
   let filter: string = "";
 
   $: if (filter) {
-    selectedWebhook = undefined;
+    selectedApp = undefined;
     history.replaceState(
       undefined,
       undefined,
@@ -108,27 +108,23 @@
     );
   }
 
-  $: sortedWebhooks = sortArray(
-    webhooks.filter((webhook) => {
+  $: sortedApps = sortArray(
+    apps.filter((app) => {
       if (filter === "") {
         return true;
       }
 
       const matches = (value: string) => value.match(new RegExp(filter, "gi"));
 
-      if (matches(webhook.name)) {
+      if (matches(app.name)) {
         return true;
       }
 
-      if (
-        webhook.tags.some(
-          (tag) => matches(tag.name) || matches(tag.synonyms)
-        )
-      ) {
+      if (app.tags.some((tag) => matches(tag.name) || matches(tag.synonyms))) {
         return true;
       }
 
-      if (matches(webhook.description)) {
+      if (matches(app.description)) {
         return true;
       }
 
@@ -147,28 +143,29 @@
 <section>
   <div class="list">
     <div class="filter">
-      <input
-        type="text"
-        placeholder={$t('filter_webhooks')}
-        bind:value={filter} />
+      <input type="text" placeholder={$t("filter_apps")} bind:value={filter} />
     </div>
-    {#each sortedWebhooks as customElement (customElement.name)}
+    {#each sortedApps as customElement (customElement.name)}
       <div
         class="group"
         id={customElement.codename}
-        class:selected={selectedWebhook == customElement}>
+        class:selected={selectedApp == customElement}>
         <div
           class="content"
           on:click={() => {
-            if (selectedWebhook !== customElement) {
-              selectedWebhook = customElement;
-              history.replaceState(undefined, undefined, `${window.location.origin}${window.location.pathname}#${customElement.codename}`);
+            if (selectedApp !== customElement) {
+              selectedApp = customElement;
+              history.replaceState(
+                undefined,
+                undefined,
+                `${window.location.origin}${window.location.pathname}#${customElement.codename}`
+              );
             }
           }}>
           <h2 class="name">{customElement.name}</h2>
-          {#if selectedWebhook == customElement}
+          {#if selectedApp == customElement}
             {#each sortArray(customElement.tags, {
-              by: ['name'],
+              by: ["name"],
             }) as tag (tag.codename)}
               <span class="tag">{tag.name}</span>
             {/each}
@@ -177,9 +174,8 @@
               use:replaceComponents={{ components, replaceMap }}>
               {@html customElement.description}
             </div>
-            <a
-              class="badge"
-              href={customElement.github}>{@html gitHubIcon.svg}{$t('github')}</a>
+            <a class="badge" href={customElement.github}
+              >{@html gitHubIcon.svg}{$t("github")}</a>
           {/if}
         </div>
         <div class="image" />

@@ -1,5 +1,6 @@
 import { DeliveryClient, IContentItem, TypeResolver } from '@kentico/kontent-delivery';
 
+import { App } from './models/App';
 import { Code } from './models/Code';
 import { CustomElement } from './models/CustomElement';
 import { Icon } from './models/Icon';
@@ -14,6 +15,7 @@ import type { Resource } from "i18next";
 interface IKontent {
   projectId: string;
   previewApiKey: string;
+  securedDeliveryApiKey: string;
   translations: Resource;
   site: ISite;
 }
@@ -23,13 +25,15 @@ export interface ISession {
 }
 
 export const deliveryClient = (options: Partial<IKontent>) => {
-  const { projectId, previewApiKey } = options;
+  const { projectId, previewApiKey, securedDeliveryApiKey } = options;
 
   return new DeliveryClient({
     projectId,
     previewApiKey,
+    secureApiKey: securedDeliveryApiKey,
     globalQueryConfig: {
       usePreviewMode: previewApiKey !== undefined,
+      useSecuredMode: securedDeliveryApiKey !== undefined,
     },
     typeResolvers: [
       new TypeResolver(Site.codename, () => new Site()),
@@ -37,6 +41,7 @@ export const deliveryClient = (options: Partial<IKontent>) => {
       new TypeResolver(Code.codename, () => new Code()),
       new TypeResolver(CustomElement.codename, () => new CustomElement()),
       new TypeResolver(Webhook.codename, () => new Webhook()),
+      new TypeResolver(App.codename, () => new App()),
       new TypeResolver(Icon.codename, () => new Icon()),
       new TypeResolver(Tag.codename, () => new Tag()),
       new TypeResolver(Translation.codename, () => new Translation()),

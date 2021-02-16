@@ -61,6 +61,7 @@
   import { fly } from "svelte/transition";
   import jwt_decode from "jwt-decode";
   import wretch from "wretch";
+  import Filter from "../../shared/components/filter.svelte";
 
   export let customElements: ICustomElement[];
   export let components: Map<string, ICode>;
@@ -145,7 +146,6 @@
   const sampleIcon = icons.find((icon) => icon.codename == "code");
   const gitHubIcon = icons.find((icon) => icon.codename == "github_icon");
   const installIcon = icons.find((icon) => icon.codename == "install_icon");
-  const dropdownIcon = icons.find((icon) => icon.codename == "dropdown");
 
   const t = translate($session.kontent.translations);
 
@@ -174,9 +174,8 @@
   let managementApiKey: string = "";
   let projectId: string;
   let contentTypes: IType[];
-  let contentTypeName: string = "";
+  let contentType: IType;
   let open: boolean = false;
-  let filtering: boolean = false;
   let newOrClone: "new" | "clone" = "new";
   let clone: boolean = true;
   let updatedTypeId: string;
@@ -188,9 +187,8 @@
 
     managementApiKey = "";
     projectId = undefined;
-    contentTypeName = "";
+    contentType = undefined;
     open = false;
-    filtering = false;
     newOrClone = "new";
     clone = true;
     updatedTypeId = undefined;
@@ -228,40 +226,8 @@
     }
   };
 
-  $: filteredContentTypes = contentTypes && filterContentTypes(contentTypeName);
-
-  const filterContentTypes = (filter: string) => {
-    const results: { value: string; type: IType }[] = [];
-
-    if (!filtering || filter == "") {
-      return contentTypes.map((type) => ({ value: type.name, type }));
-    }
-
-    const tokens = filter.toLowerCase().split("");
-
-    for (const type of contentTypes) {
-      let matched = true;
-      const name = type.name.toLowerCase().split("");
-
-      for (const token of tokens) {
-        if (
-          name.filter((l) => l === token).length <
-          tokens.filter((l) => l === token).length
-        ) {
-          matched = false;
-        }
-      }
-
-      if (matched) {
-        results.push({ value: type.name, type });
-      }
-    }
-
-    return results;
-  };
-
-  $: if (contentTypeName !== "") {
-    if (contentTypes.some((type) => type.codename === contentTypeName)) {
+  $: if (contentType) {
+    if (contentTypes.some((type) => type.codename === contentType.codename)) {
       newOrClone = "clone";
     } else {
       newOrClone = "new";
@@ -289,7 +255,7 @@
       request = wretch(newTypeEndpoint.toString())
         .auth(`Bearer ${managementApiKey}`)
         .post({
-          name: contentTypeName.slice(0, 50),
+          name: contentType.name.slice(0, 50),
           elements: [newElement],
         })
         .json<{ id: string }>();
@@ -299,7 +265,7 @@
       );
 
       const existingType = contentTypes.find(
-        (type) => type.codename === contentTypeName
+        (type) => type.codename === contentType.codename
       );
 
       existingType.name = `${existingType.name} ${$t("clone")} ${
@@ -326,7 +292,7 @@
         .json<{ id: string }>();
     } else if (newOrClone === "clone" && !clone) {
       const modifyTypeEndpoint = new URL(
-        `https://manage.kontent.ai/v2/projects/${projectId}/types/codename/${contentTypeName}`
+        `https://manage.kontent.ai/v2/projects/${projectId}/types/codename/${contentType.codename}`
       );
 
       request = wretch(modifyTypeEndpoint.toString())
@@ -388,56 +354,35 @@
                     {$t("content_type")}
                   </b>
                   <div class="group">
-                    <div class="dropdown group">
-                      <div class="item">
-                        <input
-                          id="contentType"
-                          type="text"
-                          class="new"
-                          bind:value={contentTypeName}
-                          on:input={() => {
-                            open = true;
-                            filtering = true;
-                          }} />
-                        {#if contentTypes && contentTypes.length > 0}
-                          <div class="options" class:open>
-                            {#each filteredContentTypes as contentType (contentType.type.id)}
-                              <div
-                                class="option"
-                                on:click={() => {
-                                  contentTypeName = contentType.type.codename;
-                                  open = false;
-                                  filtering = false;
-                                }}>
-                                {#if filtering}
-                                  {#each contentType.value as letter}
-                                    {#if contentTypeName
-                                      .toLowerCase()
-                                      .includes(letter.toLowerCase())}
-                                      <b>{letter}</b>
-                                    {:else}
-                                      <span>{letter}</span>
-                                    {/if}
-                                  {/each}
-                                {:else}
-                                  {contentType.value}
-                                {/if}
-                              </div>
-                            {/each}
-                          </div>
-                        {/if}
-                      </div>
-                      <div class="item">
-                        <button
-                          on:click={(e) => {
-                            open = !open;
-                            e.stopPropagation();
-                          }}
-                          class:open>{@html dropdownIcon.svg}</button>
-                      </div>
+                    <div class="typeFilter">
+                      <Filter
+                        bind:value={contentType}
+                        id="contentType"
+                        values={contentTypes}
+                        mapOption={(contentType) => ({
+                          display: contentType.name,
+                          key: contentType.id,
+                          filter: contentType.codename.toLowerCase(),
+                        })}
+                        getValue={(rawValue) => {
+                          const foundType = contentTypes.find(
+                            (contentType) => contentType.codename === rawValue
+                          );
+
+                          if (foundType) {
+                            return foundType;
+                          }
+
+                          return {
+                            id: rawValue,
+                            codename: rawValue,
+                            name: rawValue,
+                          };
+                        }}
+                        allowCustom />
                     </div>
-                    {#if contentTypeName !== ""}
-                      <div class="item">
+                    {#if contentType}
+                      <div class="typeCheckbox item">
                         <label class="newOrClone group column">
                           <input
                             class="checkbox"
@@ -457,7 +402,7 @@
               </div>
             </div>
           {/if}
-          {#if contentTypeName !== ""}
+          {#if contentType}
             <div class="item install">
               <button class="install" on:click={install}
                 >{$t("install")}</button>
@@ -618,77 +563,19 @@
     border-color: #81d272;
   }
 
-  .modal .dropdown {
+  .modal .typeFilter {
     position: relative;
     margin-right: 0.5em;
   }
 
-  .modal .dropdown .new {
-    padding: 0em 0.2em 0.3em;
-    border: none;
-    outline: none;
-    border-bottom: 0.15em solid #969696;
-    margin: 0.2em 0em 0em 0em;
-    font-size: 1em;
-    height: 1.5em;
-    font-family: Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen,
-      Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  }
-
-  .modal .dropdown .new:focus {
-    border-color: #81d272;
-  }
-
-  .modal .dropdown .options {
-    display: none;
-    position: absolute;
-    overflow: hidden;
-    background: white;
-    width: 100%;
-    border-radius: 0 0 0.5em 0.5em;
-    box-shadow: #afafaf 0em 0.4em 0.4em;
-  }
-
-  .modal .dropdown .options.open {
-    display: block;
-  }
-
-  .modal .dropdown .options .option {
-    padding: 0.1em 0.5em;
-  }
-
-  .modal .dropdown .options .option:hover {
-    background: #81d272;
-  }
-
-  .modal .dropdown button {
-    height: 1em;
-    border: none;
-    background: none;
-    outline: none;
-    font-size: 2em;
-    width: 1em;
-    display: flex;
-    cursor: pointer;
-    padding: 0.2em;
-  }
-
-  :global(.modal .dropdown button svg) {
-    width: 100%;
-    height: 100%;
-    transition: transform 0.3s;
-    transform: rotate(90deg);
-  }
-
-  :global(.modal .dropdown button.open svg) {
-    fill: #81d272;
-    transform: rotate(0deg);
+  .modal .typeCheckbox {
+    align-self: center;
   }
 
   .modal .newOrClone {
     flex-direction: row;
     height: 1.5em;
-    align-items: flex-end;
+    align-items: baseline;
   }
 
   .modal .newOrClone .checkbox {
@@ -858,10 +745,6 @@
   }
 
   @media (max-width: 800px) {
-    .group {
-      flex-direction: column;
-    }
-
     .image {
       padding: 1em 0 0;
     }
