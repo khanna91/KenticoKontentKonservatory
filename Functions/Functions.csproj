@@ -5,6 +5,7 @@
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Queues" Version="12.6.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.EventGrid" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.10" />
@@ -22,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AzureTranslator\AzureTranslator.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Gatsby\Gatsby.csproj" />
     <ProjectReference Include="..\HubSpot\HubSpot.csproj" />
     <ProjectReference Include="..\KenticoKontent\KenticoKontent.csproj" />
   </ItemGroup>

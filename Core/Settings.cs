@@ -9,6 +9,8 @@ namespace Core
         public HubSpotSettings? HubSpot { get; set; }
 
         public AzureTranslatorSettings? AzureTranslator { get; set; }
+
+        public GatsbySettings? Gatsby { get; set; }
     }
 
     public class KenticoKontentSettings
@@ -30,5 +32,14 @@ namespace Core
         public string ApiKey { get; set; } = string.Empty;
 
         public string ApiRegion { get; set; } = string.Empty;
+    }
+
+    public class GatsbySettings
+    {
+        public string QueueConnectionString { get; set; } = string.Empty;
+
+        public string QueueName { get; set; } = string.Empty;
+
+        public int DebounceSeconds { get; set; }
     }
 }
