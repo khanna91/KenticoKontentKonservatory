@@ -404,7 +404,10 @@ namespace KenticoKontent.Services
         {
             var itemTypeElements = new HashSet<ElementType>();
 
-            var itemType = (await ListContentTypes()).First(type => type.Id == typeReference.Value);
+            var itemType = (await ListContentTypes())
+                .First(type =>
+                    type.Id == typeReference.Value
+                    || type.Codename == typeReference.Value);
 
             if (itemType.Elements == null)
             {
@@ -540,6 +543,19 @@ namespace KenticoKontent.Services
             var response = await kontentRateLimiter.WithRetry(() => Put($"items/{variant.ItemReference}/variants/{languageReference}/workflow/{workflowReference}"));
 
             await ThrowIfNotSuccessStatusCode(response);
+        }
+
+        public async Task<Asset> RetrieveAsset(Reference assetReference)
+        {
+            return await Cache(
+                () => kontentRateLimiter.WithRetry(() => Get($"assets/{assetReference}")),
+                assetReference,
+                async response =>
+                {
+                    await ThrowIfNotSuccessStatusCode(response);
+
+                    return await response.Content.ReadAsAsync<Asset>();
+                });
         }
 
         private async Task EnumerateListing<T>(Func<Task<HttpResponseMessage>> doRequest, Action<T> getItems) where T : AbstractListingResponse

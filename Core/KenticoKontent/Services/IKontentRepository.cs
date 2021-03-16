@@ -45,5 +45,7 @@ namespace Core.KenticoKontent.Services
         Task PublishLanguageVariant(UpsertLanguageVariantParameters upsertLanguageVariantParameters);
 
         Task ChangeWorkflowStepLanguageVariant(ChangeWorkflowStepParameters changeWorkflowStepParameters);
+
+        Task<Asset> RetrieveAsset(Reference assetReference);
     }
 }

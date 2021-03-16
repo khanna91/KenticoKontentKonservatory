@@ -8,6 +8,8 @@ namespace Core.KenticoKontent.Models.Management.Types
 
         public string? Name { get; set; }
 
+        public string? Codename { get; set; }
+
         public IList<ElementType>? Elements { get; set; }
     }
 }

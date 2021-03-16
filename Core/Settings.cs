@@ -11,6 +11,8 @@ namespace Core
         public AzureTranslatorSettings? AzureTranslator { get; set; }
 
         public GatsbySettings? Gatsby { get; set; }
+
+        public GitHubSettings? GitHub { get; set; }
     }
 
     public class KenticoKontentSettings
@@ -41,5 +43,12 @@ namespace Core
         public string QueueName { get; set; } = string.Empty;
 
         public int DebounceSeconds { get; set; }
+    }
+
+    public class GitHubSettings
+    {
+        public string AuthorizationToken { get; set; } = string.Empty;
+
+        public string UserAgent { get; set; } = string.Empty;
     }
 }

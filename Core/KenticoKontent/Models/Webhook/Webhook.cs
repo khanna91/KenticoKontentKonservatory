@@ -25,12 +25,12 @@ namespace Core.KenticoKontent.Models.Webhook
 
     public class Data
     {
-        public IEnumerable<ItemObject>? Items { get; set; }
+        public IEnumerable<Item>? Items { get; set; }
 
         public IEnumerable<Taxonomy>? Taxonomies { get; set; }
 
         public void Deconstruct(
-            out IEnumerable<ItemObject> items,
+            out IEnumerable<Item> items,
             out IEnumerable<Taxonomy> taxonomies
             )
         {
@@ -39,17 +39,19 @@ namespace Core.KenticoKontent.Models.Webhook
         }
     }
 
-    public class ItemObject
+    public class Item
     {
-        public Reference? Item { get; set; }
+        [JsonProperty("item")]
+        public Reference? ItemReference { get; set; }
 
-        public Reference? Language { get; set; }
+        [JsonProperty("language")]
+        public Reference? LanguageReference { get; set; }
 
         [JsonProperty("transition_from")]
-        public Reference? TransitionFrom { get; set; }
+        public Reference? TransitionFromReference { get; set; }
 
         [JsonProperty("transition_to")]
-        public Reference? TransitionTo { get; set; }
+        public Reference? TransitionToReference { get; set; }
     }
 
     public class Taxonomy

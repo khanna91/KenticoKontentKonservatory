@@ -8,12 +8,15 @@ using Core;
 using Core.AzureTranslator.Services;
 using Core.Gatsby.Models;
 using Core.Gatsby.Services;
+using Core.GitHub;
 using Core.HubSpot.Services;
 using Core.KenticoKontent.Services;
 
 using Functions;
 
 using Gatsby.Services;
+
+using GitHub;
 
 using HubSpot.Services;
 
@@ -22,8 +25,6 @@ using KenticoKontent.Services;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-using static Functions.Webhooks.KontentGatsbyThrottle;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 
@@ -73,6 +74,12 @@ namespace Functions
             functionsHostBuilder.Services
                 .AddSingleton<ITextAnalyzer, TextAnalyzer>()
                 .AddHttpClient<ITranslationService, TranslationService>();
+
+            functionsHostBuilder.Services
+                .AddHttpClient<IBlobDownloader, BlobDownloader>();
+
+            functionsHostBuilder.Services
+                .AddHttpClient<IGitHubRepository, GitHubRepository>();
 
             functionsHostBuilder.Services
                 .AddSingleton<IHubSpotApiCache, HubSpotApiCache>()
