@@ -9,6 +9,7 @@ using Core.KenticoKontent.Models.Management.Items;
 using Core.KenticoKontent.Models.Management.References;
 using Core.KenticoKontent.Services;
 
+using Functions.Functions;
 using Functions.Models;
 
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Functions.Elements
 {
-    public partial class KontentChangeType : BaseFunction
+    public class KontentChangeType : BaseFunction
     {
         private readonly IKontentRepository kontentRepository;
         private readonly IKontentApiTracker kontentApiTracker;

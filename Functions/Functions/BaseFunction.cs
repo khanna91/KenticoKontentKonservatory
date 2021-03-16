@@ -1,17 +1,13 @@
 ﻿using System;
 
-using Functions.Models;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Functions
+namespace Functions.Functions
 {
     public class BaseFunction
     {
         private readonly ILogger logger;
-
-        protected const string transfers = nameof(transfers);
 
         protected BaseFunction(ILogger logger)
         {

@@ -11,6 +11,8 @@ using Core.KenticoKontent.Models.Management.References;
 using Core.KenticoKontent.Models.Webhook;
 using Core.KenticoKontent.Services;
 
+using Functions.Functions;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -94,17 +96,17 @@ namespace Functions.Webhooks
             }
         }
 
-        private async Task TranslateItem(ItemObject item, string languageCodename, string translationLanguage)
+        private async Task TranslateItem(Item item, string languageCodename, string translationLanguage)
         {
-            if (item.Item == null)
+            if (item.ItemReference == null)
             {
-                throw new ArgumentNullException(nameof(item.Item));
+                throw new ArgumentNullException(nameof(item.ItemReference));
             }
 
             var languageVariant = await kontentRepository.RetrieveLanguageVariant(new RetrieveLanguageVariantParameters
             {
-                ItemReference = item.Item,
-                LanguageReference = item.Language
+                ItemReference = item.ItemReference,
+                LanguageReference = item.LanguageReference
             });
 
             if (languageVariant == null)

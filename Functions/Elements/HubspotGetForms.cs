@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Core.HubSpot.Models;
 using Core.HubSpot.Services;
 
+using Functions.Functions;
 using Functions.Models;
 
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Functions.Elements
 {
-    public partial class HubSpotGetForms : BaseFunction
+    public class HubSpotGetForms : BaseFunction
     {
         private readonly IHubSpotRepository hubSpotRepository;
 

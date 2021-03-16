@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -11,6 +10,8 @@ using Core.Gatsby.Models;
 using Core.Gatsby.Services;
 using Core.KenticoKontent.Services;
 
+using Functions.Functions;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -19,7 +20,7 @@ using Newtonsoft.Json;
 
 namespace Functions.Webhooks
 {
-    public partial class KontentGatsbyThrottle : BaseFunction
+    public class KontentGatsbyThrottle : BaseFunction
     {
         private readonly QueueClient queueClient;
         private readonly IWebhookValidator webhookValidator;
@@ -59,11 +60,6 @@ namespace Functions.Webhooks
 
                 var webhook = getWebhook();
                 var (data, message) = webhook;
-
-                if (data.Items == null)
-                {
-                    throw new ArgumentNullException(nameof(data.Items));
-                }
 
                 switch (message.Type)
                 {

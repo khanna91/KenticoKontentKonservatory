@@ -6,6 +6,8 @@ using Azure.Storage.Queues;
 using Core.Gatsby.Models;
 using Core.Gatsby.Services;
 
+using Functions.Functions;
+
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -40,11 +42,16 @@ namespace Functions.Timers
             {
                 var message = queueClient.PeekMessage();
 
-                var queueItem = JsonConvert.DeserializeObject<QueueItem>(message.Value.Body.ToString());
+                var bodyString = message.Value?.Body.ToString();
 
-                queueClient.ClearMessages();
+                if (!string.IsNullOrWhiteSpace(bodyString))
+                {
+                    var queueItem = JsonConvert.DeserializeObject<QueueItem>(bodyString);
 
-                await gatsbyProxy.ForwardWebhook(queueItem.Webhook, queueItem.GatsbyWebhook);
+                    queueClient.ClearMessages();
+
+                    await gatsbyProxy.ForwardWebhook(queueItem.Webhook, queueItem.GatsbyWebhook);
+                }
             }
             catch (Exception ex)
             {
