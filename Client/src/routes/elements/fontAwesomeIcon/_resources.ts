@@ -5,7 +5,7 @@ export default {
       close: "Cancel picking",
       clear: "Clear icon",
       placeholder: "Filter by name or keyword...",
-      previewDescription: "This is a preview of the selected icon:",
+      previewDescription: "This is a preview of the chosen icon:",
     },
   },
 };

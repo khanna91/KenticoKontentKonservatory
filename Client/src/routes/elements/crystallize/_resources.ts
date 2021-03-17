@@ -5,7 +5,7 @@ export default {
       close: "Cancel picking",
       clear: "Clear product",
       placeholder: "Filter by name...",
-      previewDescription: "This is a preview of the selected product:",
+      previewDescription: "This is a preview of the chosen product:",
     },
   },
 };

@@ -40,12 +40,12 @@ Sometimes a Kontent model is mature and has a lot of content, but some content n
 - Update all links to this item to the new item.
 - Current item is unchanged.
 
+## Steps to install
+
 This element requires these backend functions:
 
 - [KenticoKontentKonservatory/Functions/Elements/KontentChangeType.cs](https://github.com/yuriys-kentico/KenticoKontentKonservatory/blob/main/Functions/Elements/KontentChangeType.cs)
 - [KenticoKontentKonservatory/Functions/Elements/KontentChangeTypeGetTypes.cs](https://github.com/yuriys-kentico/KenticoKontentKonservatory/blob/main/Functions/Elements/KontentChangeTypeGetTypes.cs)
-
-## Steps to install
 
 1. Clone this repository:
    - Locally, then run `npm i; npm run build; npm run start`.
@@ -53,7 +53,7 @@ This element requires these backend functions:
 1. Open `Functions.sln` in Visual Studio and publish the `Functions` project to an Azure Function App with these required environment variables:
    - **KenticoKontent:ProjectId** : the project ID.
    - **KenticoKontent:ManagementApiKey** : the project's Management API key.
-1. Choose an existing content type or create a new one by clicking `Create new`.
+1. In Kontent, choose an existing content type or create a new one by clicking `Create new`.
 1. Click `Custom element` on the right to add a new element.
 1. For **Hosted code URL (HTTPS)**, enter _{HOST FROM STEP 1}/elements/changeType_.
 1. For **Parameters {JSON}**, enter JSON with these required properties:

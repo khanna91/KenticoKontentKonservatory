@@ -38,11 +38,11 @@ Sometimes a content item represents a template with many linked items (like a co
 - New items are created in _Draft_.
 - All internal links are maintained.
 
+## Steps to install
+
 This element requires this backend function:
 
 - [KenticoKontentKonservatory/Functions/Elements/KontentDeepClone.cs](https://github.com/yuriys-kentico/KenticoKontentKonservatory/blob/main/Functions/Elements/KontentDeepClone.cs)
-
-## Steps to install
 
 1. Clone this repository:
    - Locally, then run `npm i; npm run build; npm run start`.
@@ -50,7 +50,7 @@ This element requires this backend function:
 1. Open `Functions.sln` in Visual Studio and publish the `Functions` project to an Azure Function App with these required environment variables:
    - **KenticoKontent:ProjectId** : the project ID.
    - **KenticoKontent:ManagementApiKey** : the project's Management API key.
-1. Choose an existing content type or create a new one by clicking `Create new`.
+1. In Kontent, choose an existing content type or create a new one by clicking `Create new`.
 1. Click `Custom element` on the right to add a new element.
 1. For **Hosted code URL (HTTPS)**, enter _{HOST FROM STEP 1}/elements/deepClone_.
 1. For **Parameters {JSON}**, enter JSON with these required properties:

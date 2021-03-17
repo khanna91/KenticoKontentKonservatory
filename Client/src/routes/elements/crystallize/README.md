@@ -36,14 +36,14 @@ Crystallize is a popular PIM that can provide benefits to Kontent projects.
 
 - Search for any product from your Crystallize store.
 - Localize currencies based on the item's languages.
-- Preview useful content from the selected product.
+- Preview useful content from the chosen product.
 
 ## Steps to install
 
 1. Clone this repository:
    - Locally, then run `npm i; npm run build; npm run start`.
    - On Vercel: [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2Fyuriys-kentico%2FKenticoKontentKonservatory%2F).
-1. Choose an existing content type or create a new one by clicking `Create new`.
+1. In Kontent, choose an existing content type or create a new one by clicking `Create new`.
 1. Click `Custom element` on the right to add a new element.
 1. For **Hosted code URL (HTTPS)**, enter _{HOST FROM STEP 1}/elements/crystallize_.
 1. For **Parameters {JSON}**, enter JSON with these required properties:

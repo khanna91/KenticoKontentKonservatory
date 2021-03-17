@@ -9,7 +9,7 @@
   import type { IHubSpotForm } from "./_hubSpot";
   import { onMount } from "svelte";
   import wretch from "wretch";
-  import { localStore } from "../../../utilities/localStore";
+  import { localStorage } from "../../../utilities/localStore";
 
   enum LocalStorageKeys {
     Code = "HubSpotForms:code",
@@ -40,8 +40,8 @@
   let response: IHubSpotFormResponse;
   let showForm: boolean = true;
 
-  const code = localStore<string>(LocalStorageKeys.Code);
-  const refreshToken = localStore<string>(LocalStorageKeys.RefreshToken);
+  const code = localStorage<string>(LocalStorageKeys.Code);
+  const refreshToken = localStorage<string>(LocalStorageKeys.RefreshToken);
 
   onMount(() => {
     redirectUri = window.location.href;
@@ -112,8 +112,12 @@
           <select
             class="select"
             value={value.form && value.form.guid}
-            on:change={(event) => event.currentTarget.value !== '' && (value.form = response.forms.find((form) => form.guid === event.currentTarget.value))}>
-            <option value="">{$t('chooseForm')}</option>
+            on:change={(event) =>
+              event.currentTarget.value !== "" &&
+              (value.form = response.forms.find(
+                (form) => form.guid === event.currentTarget.value
+              ))}>
+            <option value="">{$t("chooseForm")}</option>
             {#each response.forms as form (form.guid)}
               <option value={form.guid}>{form.name}</option>
             {/each}
@@ -126,7 +130,7 @@
       {#if value.form}
         <div class="group" transition:fade>
           <div class="group column">
-            <div>{$t('previewDescription')}</div>
+            <div>{$t("previewDescription")}</div>
             <div class="form group column">
               <h3>{value.form.name}</h3>
               {#if showForm}
@@ -141,7 +145,7 @@
                         {:else}{field.label}{/if}
                       </p>
                       <p class="field">
-                        {#if field.fieldType === 'text'}
+                        {#if field.fieldType === "text"}
                           <input
                             class="input"
                             name={field.name}
@@ -149,7 +153,7 @@
                             placeholder={field.placeholder}
                             required={field.required}
                             value={field.defaultValue} />
-                        {:else if field.fieldType === 'booleancheckbox'}
+                        {:else if field.fieldType === "booleancheckbox"}
                           <input
                             class="input checkbox"
                             name={field.name}
@@ -157,7 +161,7 @@
                             placeholder={field.placeholder}
                             required={field.required}
                             value={field.defaultValue} />
-                        {:else if field.fieldType === 'textarea'}
+                        {:else if field.fieldType === "textarea"}
                           <textarea
                             class="input textarea"
                             name={field.name}
@@ -179,7 +183,7 @@
             </div>
             {#if !showForm}
               <button class="button" on:click={() => (showForm = true)}>
-                {$t('reset')}
+                {$t("reset")}
               </button>
             {/if}
           </div>
